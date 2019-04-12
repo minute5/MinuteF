@@ -1,0 +1,628 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.test.manager.infra.mapper.TestCycleCaseMapper">
+
+    <resultMap type="io.choerodon.test.manager.infra.dataobject.TestCycleCaseDO" id="BaseResultMap">
+        <id column="execute_id" property="executeId"/>
+        <id column="cycle_id" property="cycleId"/>
+        <id column="issue_id" property="issueId"/>
+        <id column="rank" property="rank"/>
+        <id column="object_version_number" property="objectVersionNumber"/>
+        <id column="execution_status" property="executionStatus"/>
+        <id column="status_name" property="executionStatusName"/>
+        <id column="assigned_to" property="assignedTo"/>
+        <id column="description" property="comment"/>
+        <id column="cycle_name" property="cycleName"/>
+        <id column="folder_name" property="folderName"/>
+        <id column="version_id" property="versionId"/>
+        <id column="last_update_date" property="lastUpdateDate"/>
+        <id column="last_updated_by" property="lastUpdatedBy"/>
+        <id column="last_execute_id" property="lastExecuteId"/>
+        <id column="next_execute_id" property="nextExecuteId"/>
+        <collection property="caseDefect"
+                    ofType="io.choerodon.test.manager.infra.dataobject.TestCycleCaseDefectRelDO">
+            <id column="defect_issue_id" property="issueId"/>
+            <id column="defect_type" property="defectType"/>
+            <id column="defect_link_id" property="defectLinkId"/>
+            <id column="defece_id" property="id"/>
+        </collection>
+        <collection property="caseAttachment"
+                    ofType="io.choerodon.test.manager.infra.dataobject.TestCycleCaseAttachmentRelDO">
+            <id column="url" property="url"/>
+            <id column="attachment_name" property="attachmentName"/>
+            <id column="attachment_link_id" property="attachmentLinkId"/>
+            <id column="attachment_type" property="attachmentType"/>
+            <id column="id" property="id"/>
+        </collection>
+        <collection property="cycleCaseStep" ofType="io.choerodon.test.manager.infra.dataobject.TestCycleCaseStepDO">
+            <id column="step_id" property="stepId"/>
+            <id column="comment" property="description"/>
+            <id column="step_status_name" property="statusName"/>
+            <id column="test_step" property="testStep"/>
+            <id column="test_data" property="testData"/>
+            <id column="expected_result" property="expectedResult"/>
+        </collection>
+    </resultMap>
+
+    <select id="filter" resultMap="BaseResultMap">
+        SELECT cycle.execute_id,cycle.cycle_id,cycle.issue_id,cycle.rank,cycle.object_version_number,
+        cycle.execution_status,cycle.assigned_to,cycle.description,cycle.last_update_date,cycle.last_updated_by,
+        defect.defect_type,defect.id defece_id,defect.defect_link_id,defect.issue_id defect_issue_id
+        FROM test_cycle_case cycle
+        left join test_cycle_case_defect_rel defect
+        on cycle.execute_id=defect.defect_link_id and defect.defect_type='CYCLE_CASE'
+        where cycle.cycle_id=#{cycleId}
+        <if test="executionStatus != null">
+            and
+            cycle.execution_status in
+            <foreach item="item" index="index" collection="executionStatus"
+                     open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+    </select>
+
+    <select id="queryWithAttachAndDefect_oracle" resultMap="BaseResultMap">
+        SELECT
+        cycle.execute_id,
+        cycle.cycle_id,
+        cycle.issue_id,
+        cycle.rank,
+        cycle.object_version_number,
+        cycle.execution_status,
+        cycle.assigned_to,
+        cycle.description,
+        attach.url,
+        attach.attachment_name,
+        attach.id,
+        cycle.last_update_date,
+        cycle.last_updated_by,
+        defect.defect_type,
+        defect.id defece_id,
+        defect.defect_link_id,
+        (select
+        lag(EXECUTE_ID,0,null) over(PARTITION by cycle_id ORDER BY rank desc) from TEST_CYCLE_CASE where cycle.rank>rank and ROWNUM=1 ) last_execute_id,
+        (select
+        lead(EXECUTE_ID,0,null) over(PARTITION by cycle_id ORDER BY rank asc) from TEST_CYCLE_CASE where rank> cycle.rank and ROWNUM=1 ) next_execute_id,
+        defect.issue_id defect_issue_id
+        FROM
+        (
+        SELECT
+        *
+        FROM
+        (
+        SELECT
+        tt.*, ROWNUM AS rowno
+        FROM
+        (
+        SELECT
+        *
+        FROM
+        test_cycle_case
+        <where>
+            <if test="dto!=null and dto.issueId != null">
+                AND issue_id = #{dto.issueId}
+            </if>
+            <if test="dto!=null and dto.cycleId != null">
+                AND cycle_id = #{dto.cycleId}
+            </if>
+            <if test="dto!=null and dto.executeId != null">
+                AND execute_id = #{dto.executeId}
+            </if>
+            <if test="dto!=null and dto.executionStatus != null">
+                AND execution_status = #{dto.executionStatus}
+            </if>
+            <if test="dto!=null and dto.comment != null">
+                AND description like CONCAT(CONCAT('%', #{dto.comment}), '%')
+            </if>
+            <if test="dto!=null and dto.assignedTo != null">
+                AND assigned_to = #{dto.assignedTo}
+            </if>
+            <if test="dto!=null and dto.lastUpdatedBy != null">
+                AND last_updated_by = #{dto.lastUpdatedBy}
+            </if>
+            <if test="dto!=null and dto.lastUpdateDate != null">
+                AND last_update_date <![CDATA[>=]]> #{dto.lastUpdateDate}
+            </if>
+        </where>
+        ORDER BY
+        RANK
+        ) tt
+        <if test="pageSize !=0">
+        WHERE
+            <![CDATA[ROWNUM <= #{pageSize}]]>
+        </if>
+        ) table_alias
+        <if test="pageSize !=0">
+        WHERE
+            <![CDATA[ table_alias.rowno >= #{page}]]>
+        </if>
+        ) cycle
+        LEFT JOIN test_cycle_case_attach_rel attach ON cycle.execute_id = attach.attachment_link_id
+        AND attach.attachment_type = 'CYCLE_CASE'
+        LEFT JOIN test_cycle_case_defect_rel defect ON cycle.execute_id = defect.defect_link_id
+        AND defect.defect_type = 'CYCLE_CASE'
+    </select>
+
+
+    <select id="queryWithAttachAndDefect" resultMap="BaseResultMap">
+        SELECT
+        cycle.execute_id,
+        cycle.cycle_id,
+        cycle.issue_id,
+        cycle.rank,
+        cycle.object_version_number,
+        cycle.execution_status,
+        cycle.assigned_to,
+        cycle.description,
+        attach.url,
+        attach.attachment_name,
+        attach.id,
+        cycle.last_update_date,
+        cycle.last_updated_by,
+        defect.defect_type,
+        defect.id defece_id,
+        defect.defect_link_id,
+        <![CDATA[(select execute_id from test_cycle_case where cycle_id=cycle.cycle_id and cycle.rank > rank order by rank DESC limit 1) last_execute_id,
+        (select execute_id from test_cycle_case where cycle_id=cycle.cycle_id and cycle.rank < rank order by rank  ASC limit 1) next_execute_id, ]]>
+        defect.issue_id defect_issue_id
+        FROM
+        ( SELECT * FROM test_cycle_case
+        <where>
+            <if test="dto!=null and dto.issueId != null">
+                AND issue_id = #{dto.issueId}
+            </if>
+            <if test="dto!=null and dto.cycleId != null">
+                AND cycle_id = #{dto.cycleId}
+            </if>
+            <if test="dto!=null and dto.executeId != null">
+                AND execute_id = #{dto.executeId}
+            </if>
+            <if test="dto!=null and dto.executionStatus != null">
+                AND execution_status = #{dto.executionStatus}
+            </if>
+            <if test="dto!=null and dto.comment != null">
+                AND description like CONCAT(CONCAT('%', #{dto.comment}), '%')
+            </if>
+            <if test="dto!=null and dto.assignedTo != null">
+                AND assigned_to = #{dto.assignedTo}
+            </if>
+            <if test="dto!=null and dto.lastUpdatedBy != null">
+                AND last_updated_by = #{dto.lastUpdatedBy}
+            </if>
+            <if test="dto!=null and dto.lastUpdateDate != null">
+                AND last_update_date <![CDATA[>=]]> #{dto.lastUpdateDate}
+            </if>
+        </where>
+        order by rank
+        <if test="pageSize !=0">
+            limit #{page} , #{pageSize}
+        </if>
+        ) cycle
+        LEFT JOIN test_cycle_case_attach_rel attach ON cycle.execute_id = attach.attachment_link_id
+        AND attach.attachment_type = 'CYCLE_CASE'
+        LEFT JOIN test_cycle_case_defect_rel defect ON cycle.execute_id = defect.defect_link_id
+        AND defect.defect_type = 'CYCLE_CASE'
+    </select>
+
+    <select id="queryByFatherCycleWithAttachAndDefect" resultMap="BaseResultMap">
+        SELECT
+        rCycle.cycle_name,
+        cycle.execute_id,
+        cycle.cycle_id,
+        cycle.issue_id,
+        cycle.rank,
+        cycle.object_version_number,
+        cycle.execution_status,
+        cycle.assigned_to,
+        cycle.description,
+        attach.url,
+        attach.attachment_name,
+        attach.id,
+        cycle.last_update_date,
+        cycle.last_updated_by,
+        defect.defect_type,
+        defect.id defece_id,
+        defect.defect_link_id,
+        defect.issue_id defect_issue_id
+        FROM
+        ( SELECT * FROM test_cycle_case
+        <where>
+           cycle_id in
+            <foreach item="dto" index="index" collection="dtos"
+                     open="(" separator="," close=")">
+                #{dto.cycleId}
+            </foreach>
+            <if test="!dtos.isEmpty and dtos.get(0).assignedTo != null">
+                AND assigned_to = #{dtos[0].assignedTo}
+            </if>
+            <if test="!dtos.isEmpty and dtos.get(0).lastUpdatedBy != null">
+                AND last_updated_by = #{dtos[0].lastUpdatedBy}
+            </if>
+            <if test="!dtos.isEmpty and dtos.get(0).executionStatus != null">
+                AND execution_status = #{dtos[0].executionStatus}
+            </if>
+            <if test="!dtos.isEmpty and dtos.get(0).comment != null">
+                AND description like CONCAT(CONCAT('%', #{dtos[0].comment}), '%')
+            </if>
+        </where>
+        order by rank
+        <if test="pageSize !=0">
+            limit #{page} , #{pageSize}
+        </if>
+        ) cycle
+        LEFT JOIN test_cycle_case_attach_rel attach ON cycle.execute_id = attach.attachment_link_id
+        AND attach.attachment_type = 'CYCLE_CASE'
+        LEFT JOIN test_cycle_case_defect_rel defect ON cycle.execute_id = defect.defect_link_id
+        AND defect.defect_type = 'CYCLE_CASE'
+        LEFT JOIN test_cycle rCycle ON cycle.cycle_id = rCycle.cycle_id
+    </select>
+
+    <select id="queryByFatherCycleWithAttachAndDefect_oracle" resultMap="BaseResultMap">
+        SELECT
+        rCycle.cycle_name,
+        cycle.execute_id,
+        cycle.cycle_id,
+        cycle.issue_id,
+        cycle.rank,
+        cycle.object_version_number,
+        cycle.execution_status,
+        cycle.assigned_to,
+        cycle.description,
+        attach.url,
+        attach.attachment_name,
+        attach.id,
+        cycle.last_update_date,
+        cycle.last_updated_by,
+        defect.defect_type,
+        defect.id defece_id,
+        defect.defect_link_id,
+        defect.issue_id defect_issue_id
+        FROM
+        (
+        SELECT
+        *
+        FROM
+        (
+        SELECT
+        tt.*, ROWNUM AS rowno
+        FROM
+        (
+        SELECT * FROM test_cycle_case
+        <where>
+            cycle_id in
+            <foreach item="dto" index="index" collection="dtos"
+                     open="(" separator="," close=")">
+                #{dto.cycleId}
+            </foreach>
+            <if test="!dtos.isEmpty and dtos.get(0).assignedTo != null">
+                AND assigned_to = #{dtos[0].assignedTo}
+            </if>
+            <if test="!dtos.isEmpty and dtos.get(0).lastUpdatedBy != null">
+                AND last_updated_by = #{dtos[0].lastUpdatedBy}
+            </if>
+            <if test="!dtos.isEmpty and dtos.get(0).executionStatus != null">
+                AND execution_status = #{dtos[0].executionStatus}
+            </if>
+            <if test="!dtos.isEmpty and dtos.get(0).comment != null">
+                AND description like CONCAT(CONCAT('%', #{dtos[0].comment}), '%')
+            </if>
+        </where>
+        order by rank
+        )tt
+        <if test="pageSize !=0">
+            WHERE
+            <![CDATA[ROWNUM <= #{pageSize}]]>
+        </if>
+        ) table_alias
+        <if test="pageSize !=0">
+            WHERE
+            <![CDATA[ table_alias.rowno >= #{page}]]>
+        </if>
+        ) cycle
+        LEFT JOIN test_cycle_case_attach_rel attach ON cycle.execute_id = attach.attachment_link_id
+        AND attach.attachment_type = 'CYCLE_CASE'
+        LEFT JOIN test_cycle_case_defect_rel defect ON cycle.execute_id = defect.defect_link_id
+        AND defect.defect_type = 'CYCLE_CASE'
+        LEFT JOIN test_cycle rCycle ON cycle.cycle_id = rCycle.cycle_id ORDER BY rank
+    </select>
+
+    <select id="queryWithAttachAndDefect_count" resultType="java.lang.Long">
+        SELECT count(execute_id) FROM test_cycle_case
+        <where>
+            <if test="dto!=null and dto.issueId != null">
+                AND issue_id = #{dto.issueId}
+            </if>
+            <if test="dto!=null and dto.cycleId != null">
+                AND cycle_id = #{dto.cycleId}
+            </if>
+            <if test="dto!=null and dto.executeId != null">
+                AND execute_id = #{dto.executeId}
+            </if>
+            <if test="dto!=null and dto.executionStatus != null">
+                AND execution_status = #{dto.executionStatus}
+            </if>
+            <if test="dto!=null and dto.comment != null">
+                AND description like CONCAT(CONCAT('%', #{dto.comment}), '%')
+            </if>
+            <if test="dto!=null and dto.assignedTo != null">
+                AND assigned_to = #{dto.assignedTo}
+            </if>
+            <if test="dto!=null and dto.lastUpdatedBy != null">
+                AND last_updated_by = #{dto.lastUpdatedBy}
+            </if>
+            <if test="dto!=null and dto.lastUpdateDate != null">
+                AND last_update_date <![CDATA[>=]]> #{dto.lastUpdateDate}
+            </if>
+        </where>
+    </select>
+    <select id="queryByIssue" resultMap="BaseResultMap">
+                SELECT cycle.execute_id,cycle.cycle_id,cycle.issue_id,cycle.rank,cycle.object_version_number,
+        defect.defect_type,defect.id defece_id,defect.defect_link_id,defect.issue_id defect_issue_id,
+        cycle.execution_status,cycle.assigned_to,cycle.description,cycle.last_update_date,cycle.last_updated_by,
+        case cycle1.type
+        when 'folder' then (select cycle2.cycle_name from test_cycle cycle2 where cycle1.parent_cycle_id = cycle2.cycle_id )
+        ELSE cycle1.cycle_name
+        end as cycle_name,
+        case cycle1.type
+        when 'folder' then cycle1.cycle_name
+        end as folder_name
+        FROM test_cycle_case cycle
+        left join test_cycle cycle1 on cycle1.cycle_id=cycle.cycle_id
+        left join test_cycle_case_defect_rel defect
+        on cycle.execute_id=defect.defect_link_id and defect.defect_type='CYCLE_CASE'
+        where cycle.issue_id=#{issueId}
+    </select>
+
+    <select id="queryCaseAllInfoInCyclesOrVersions" resultMap="BaseResultMap">
+        SELECT
+        cycle.execute_id,
+        cycle.cycle_id,
+        cycle.issue_id,
+        cycle.rank,
+        cycle.object_version_number,
+        cycle.execution_status,
+        cycle.assigned_to,
+        cycle.description,
+        cycle.last_update_date,
+        cycle.last_updated_by,
+        cycle1.version_id,
+        status1.status_name,
+        step.test_step,
+        step.test_data,
+        step.expected_result,
+        step.coment,
+        step.step_status_name,
+        defect.defect_type,
+        defect.id defece_id,
+        defect.defect_link_id,
+        defect.issue_id defect_issue_id,
+        attach.url,
+        attach.attachment_name,
+        attach.id,
+        attach.attachment_type,
+        attach.attachment_link_id,
+        CASE
+        cycle1.type
+        WHEN 'folder' THEN
+        ( SELECT cycle2.cycle_name FROM test_cycle cycle2 WHERE cycle1.parent_cycle_id = cycle2.cycle_id ) ELSE
+        cycle1.cycle_name
+        END AS cycle_name,
+        CASE
+        cycle1.type
+        WHEN 'folder' THEN
+        cycle1.cycle_name
+        END AS folder_name
+        FROM
+        test_cycle_case cycle
+        LEFT JOIN test_cycle cycle1 ON cycle1.cycle_id = cycle.cycle_id
+        LEFT JOIN test_status status1 ON cycle.execution_status = status1.status_id
+        AND status1.status_type = 'CYCLE_CASE'
+        LEFT JOIN (
+        SELECT
+        step1.execute_step_id,
+        step1.execute_id,
+        step1.step_id,
+        step1.description coment,
+        status_name step_status_name,
+        step2.test_step,
+        step2.test_data,
+        step2.expected_result
+        FROM
+        test_cycle_case_step step1
+        LEFT JOIN test_case_step step2 ON step1.step_id = step2.step_id
+        LEFT JOIN test_status ON step1.step_status = status_id
+        AND status_type = 'CASE_STEP'
+        ORDER BY
+        rank
+        ) step ON step.execute_id = cycle.execute_id
+        LEFT JOIN test_cycle_case_defect_rel defect ON ( cycle.execute_id = defect.defect_link_id AND defect.defect_type
+        = 'CYCLE_CASE' )
+        OR ( step.execute_step_id = defect.defect_link_id AND defect.defect_type = 'CASE_STEP' )
+        LEFT JOIN test_cycle_case_attach_rel attach ON ( cycle.execute_id = attach.attachment_link_id AND
+        attach.attachment_type = 'CYCLE_CASE' )
+        OR ( step.execute_step_id = attach.attachment_link_id AND attach.attachment_type = 'CYCLE_STEP' )
+        OR ( step.step_id = attach.attachment_link_id AND attach.attachment_type = 'CASE_STEP' )
+        <where>
+            <if test="cycleIds !=null">
+                cycle1.cycle_id in
+                <foreach item="item" index="index" collection="cycleIds"
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="versionIds !=null">
+                cycle1.version_id in
+                <foreach item="item" index="index" collection="versionIds"
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY cycle.rank
+    </select>
+
+
+    <resultMap type="io.choerodon.test.manager.infra.dataobject.TestCycleCaseDO" id="BaseResultMapForReporter">
+        <id column="execute_id" property="executeId"/>
+        <id column="cycle_id" property="cycleId"/>
+        <id column="issue_id" property="issueId"/>
+        <id column="rank" property="rank"/>
+        <id column="object_version_number" property="objectVersionNumber"/>
+        <id column="execution_status" property="executionStatus"/>
+        <id column="status_name" property="executionStatusName"/>
+        <id column="assigned_to" property="assignedTo"/>
+        <id column="description" property="comment"/>
+        <id column="cycle_name" property="cycleName"/>
+        <id column="folder_name" property="folderName"/>
+        <id column="last_update_date" property="lastUpdateDate"/>
+        <id column="last_updated_by" property="lastUpdatedBy"/>
+        <collection property="caseDefect"
+                    ofType="io.choerodon.test.manager.infra.dataobject.TestCycleCaseDefectRelDO">
+            <id column="defect_issue_id" property="issueId"/>
+            <id column="defect_type" property="defectType"/>
+            <id column="defect_link_id" property="defectLinkId"/>
+            <id column="defecet_id" property="id"/>
+        </collection>
+
+        <collection property="subStepDefects"
+                    ofType="io.choerodon.test.manager.infra.dataobject.TestCycleCaseDefectRelDO">
+            <id column="sub_defect_issue_id" property="issueId"/>
+            <id column="sub_defect_type" property="defectType"/>
+            <id column="sub_defect_link_id" property="defectLinkId"/>
+            <id column="sub_defece_id" property="id"/>
+        </collection>
+    </resultMap>
+
+
+    <select id="queryInIssues" resultMap="BaseResultMapForReporter">
+        SELECT
+        cycle.execute_id,
+        cycle.cycle_id,
+        cycle.issue_id,
+        cycle.rank,
+        cycle.object_version_number,
+        defect.defect_type,
+        defect.id defece_id,
+        defect.defect_link_id,
+        defect.issue_id defect_issue_id,
+        cycle.execution_status,
+        cycle.assigned_to,
+        cycle.description,
+        cycle.last_update_date,
+        cycle.last_updated_by,
+        step.issue_id sub_defect_issue_id,
+        step.id sub_defece_id,
+        step.defect_type sub_defect_type,
+        step.defect_link_id sub_defect_link_id,
+        CASE
+        cycle1.type
+        WHEN 'folder' THEN
+        ( SELECT cycle2.cycle_name FROM test_cycle cycle2 WHERE cycle1.parent_cycle_id = cycle2.cycle_id ) ELSE cycle1.cycle_name
+        END AS cycle_name,
+        CASE
+        cycle1.type
+        WHEN 'folder' THEN
+        cycle1.cycle_name
+        END AS folder_name
+        FROM
+        test_cycle_case cycle
+        LEFT JOIN test_cycle cycle1 ON cycle1.cycle_id = cycle.cycle_id
+        LEFT JOIN test_cycle_case_defect_rel defect ON cycle.execute_id = defect.defect_link_id
+        AND defect.defect_type = 'CYCLE_CASE'
+        LEFT JOIN ( SELECT execute_id, id, defect_type, defect_link_id, issue_id FROM test_cycle_case_step INNER JOIN test_cycle_case_defect_rel ON execute_step_id = defect_link_id AND defect_type = 'CASE_STEP' ) step ON step.execute_id = cycle.execute_id
+        WHERE
+        cycle.issue_id IN
+        <foreach item="item" index="index" collection="ids"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="queryCycleCaseForReporter" resultMap="BaseResultMap">
+        SELECT cycle.execute_id,cycle.cycle_id,cycle.execution_status,cycle1.cycle_name,cycle.issue_id
+        FROM test_cycle_case cycle
+        left join test_cycle cycle1 on cycle1.cycle_id=cycle.cycle_id
+        where cycle.execute_id in
+        <foreach item="item" index="index" collection="ids"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="countCaseNotRun" resultType="java.lang.Long">
+        select count(*) from test_cycle_case
+        left join test_status st on execution_status=st.status_id
+        where st.status_name='未执行' and cycle_id in
+        <foreach item="item" index="index" collection="ids"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="countCaseNotPlain" resultType="java.lang.Long">
+        SELECT
+        count( DISTINCT ( issue_id ) )
+        FROM
+        test_cycle_case where cycle_id in
+        <foreach item="item" index="index" collection="ids"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="countCaseSum" resultType="java.lang.Long">
+        SELECT
+        count(execute_id)
+        FROM
+        test_cycle_case where cycle_id in
+        <foreach item="item" index="index" collection="ids"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="validateCycleCaseInCycle" resultType="java.lang.Long">
+        select count(case1.execute_id) from test_cycle_case case1
+        left join test_cycle cycle on cycle.cycle_id=case1.cycle_id
+        where cycle.type != 'temp' and case1.cycle_id=#{cycleId} and case1.issue_id=#{issueId}
+    </select>
+
+
+    <select id="getLastedRank" resultType="java.lang.String">
+SELECT
+	rank
+FROM
+	test_cycle_case
+WHERE
+	cycle_id = #{cycleId}
+ORDER BY
+	rank DESC
+	LIMIT 1
+    </select>
+
+    <select id="getLastedRank_oracle" resultType="java.lang.String">
+SELECT
+	rank
+FROM
+	test_cycle_case
+WHERE
+	cycle_id = #{cycleId} and rownum=1
+ORDER BY
+	rank DESC
+
+    </select>
+
+    <insert id="batchInsertTestCycleCases" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="executeId">
+        INSERT INTO test_cycle_case(cycle_id, issue_id, rank, execution_status, assigned_to, description, object_version_number,
+        created_by, creation_date, last_updated_by, last_update_date) VALUES
+        <foreach collection="list" item="cycleCase" separator=",">
+            (#{cycleCase.cycleId}, #{cycleCase.issueId}, #{cycleCase.rank}, #{cycleCase.executionStatus}, #{cycleCase.assignedTo},
+            #{cycleCase.description}, 1, #{cycleCase.createdBy}, #{cycleCase.creationDate}, #{cycleCase.lastUpdatedBy}, #{cycleCase.lastUpdateDate})
+        </foreach>
+    </insert>
+</mapper>
+
+
+

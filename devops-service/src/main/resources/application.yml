@@ -1,0 +1,32 @@
+spring:
+  sleuth:
+    integration:
+      enabled: false
+    scheduled:
+      enabled: false
+    sampler:
+      percentage: 1.0
+gitlab:
+  url: "http://127.0.0.1:10080"
+  privateToken: "Dm3dPtVKPGhm28Z-yuy_"
+eureka:
+  instance:
+    preferIpAddress: true
+    leaseRenewalIntervalInSeconds: 1
+    leaseExpirationDurationInSeconds: 3
+  client:
+    serviceUrl:
+      defaultZone: http://106.14.187.2:8000/eureka/
+    registryFetchIntervalSeconds: 1
+feign:
+  hystrix:
+    shareSecurityContext: true
+    command:
+      default:
+        execution:
+          isolation:
+            thread:
+              timeoutInMilliseconds: 30000
+ribbon:
+  ConnectTimeout: 50000
+  ReadTimeout: 50000

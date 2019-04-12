@@ -1,0 +1,71 @@
+spring:
+#  bus:
+#    enabled: true
+#  sleuth:
+#    stream:
+#      enabled: true
+  datasource:
+    url: jdbc:mysql://106.14.187.2:3306/oauth-service?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: 7414
+  redis:
+#    host: 106.14.187.2
+    host: 127.0.0.1
+    port: 6379
+eureka:
+  instance:
+    preferIpAddress: true
+    leaseRenewalIntervalInSeconds: 10
+    leaseExpirationDurationInSeconds: 30
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://106.14.187.2:8000/eureka/}
+    registryFetchIntervalSeconds: 10
+mybatis:
+  mapperLocations: classpath*:/mapper/*.xml
+  configuration:
+    mapUnderscoreToCamelCase: true
+feign:
+  hystrix:
+    enabled: true
+hystrix:
+  stream:
+    queue:
+      enabled: true
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 10000
+ribbon:
+  ReadTimeout: 10000
+  ConnectTimeout: 10000
+#choerodon:
+#  redisHttpSession:
+#    enabled: true
+#  oauth:
+#    clear-token: true
+#    enabled-single-login: false
+#    access-token-validity-seconds: 86400
+#    login:
+#      field: mail,phone
+#      path: /login
+#      ssl: false
+#    loginPage.title: Choerodon
+#  reset-password:
+#    check: true
+#  default:
+#    redirect:
+#      url: http://106.14.187.2:8080/manager/swagger-ui.html
+#hook:
+#  token: abc
+#security:
+#  oauth2:
+#    resource:
+#      id: resource
+#      user-info-uri: http://locahost:8080/oauth/v1/user
+#      prefer-token-info: false
+security:
+  basic:
+    enabled: false

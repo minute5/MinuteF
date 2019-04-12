@@ -1,0 +1,26 @@
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          uri: git@github.com:minute5/MinuteF.git
+#          https://github.com/minute5/MinuteF.git
+        bootstrap: false
+feign:
+  hystrix:
+    command:
+      default:
+        execution:
+          isolation:
+            thread:
+              timeoutInMilliseconds: 10000
+eureka:
+  instance:
+    preferIpAddress: true
+    leaseRenewalIntervalInSeconds: 10
+    leaseExpirationDurationInSeconds: 30
+  client:
+    serviceUrl:
+      defaultZone: http://106.14.187.2:8000/eureka/
+    registryFetchIntervalSeconds: 10
+

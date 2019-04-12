@@ -1,0 +1,20 @@
+spring:
+  cloud:
+    server:
+     consul:
+      watch:
+        enabled: true
+    bus:
+      enabled: false
+  sleuth:
+    stream:
+      enabled: false
+hystrix:
+  stream:
+    queue:
+      enabled: false
+data:
+  dir: src/main/resources
+eureka:
+  client:
+    enabled: false

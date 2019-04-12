@@ -1,0 +1,65 @@
+spring:
+  http:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 30MB
+eureka:
+  instance:
+    preferIpAddress: true
+    leaseRenewalIntervalInSeconds: 10
+    leaseExpirationDurationInSeconds: 30
+    metadata-map:
+      VERSION: v1
+  client:
+    serviceUrl:
+      defaultZone: http://106.14.187.2:8000/eureka/
+    registryFetchIntervalSeconds: 10
+    disable-delta: true
+zuul:
+  addHostHeader: true
+  routes:
+    oauth:
+      path: /oauth/**
+      sensitiveHeaders:
+      serviceId: oauth-server
+      stripPrefix: false
+    devops:
+      path: /devops/**
+      serviceId: devops-gitlab-service
+    agile:
+      path: /agile/**
+      serviceId: agile-service
+    test-manager:
+      path: /test/**
+      serviceId: test-manager-service
+  semaphore:
+    max-semaphores: 300
+  sensitiveHeaders: Cookie,Set-Cookie
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 20000
+ribbon:
+  ReadTimeout: 20000
+  ConnectTimeout: 20000
+  httpclient:
+    enabled: false
+  okhttp:
+    enabled: true
+management:
+  port: 8081
+  security:
+    enabled: false
+security:
+  basic:
+    enabled: false
+#  oauth2:
+#    client:
+#      access-token-uri: http://localhost:8080/oauth/token #网关的地址
+#      user-authorization-uri: http://localhost:8080/oauth/authorize
+#    resource:
+#      user-info-uri:  http://localhost:8080/oauth/v1/user
+#      prefer-token-info: false

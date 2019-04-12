@@ -1,0 +1,22 @@
+server:
+  port: 8380
+spring:
+  application:
+    name: agile-service
+  cloud:
+    config:
+      failFast: true
+      retry:
+        maxAttempts: 6
+        multiplier: 1.5
+        maxInterval: 2000
+      uri: localhost:8010
+      enabled: false
+management:
+  port: 8381
+  security:
+    enabled: false
+security:
+  basic:
+    enabled: false
+
