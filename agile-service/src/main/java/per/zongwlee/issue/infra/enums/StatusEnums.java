@@ -6,9 +6,9 @@ package per.zongwlee.issue.infra.enums;
  */
 public enum StatusEnums {
 
-    backlog(0L),
-    active(1L),
-    finished(2L);
+    backlog(1L),
+    active(2L),
+    finished(3L);
 
     private Long status;
 
