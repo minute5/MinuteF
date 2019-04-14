@@ -1,12 +1,10 @@
 package per.zongwlee.issue.domain.service.impl;
 
-import io.choerodon.core.convertor.ConvertPageHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.service.BaseServiceImpl;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
@@ -18,6 +16,10 @@ import per.zongwlee.issue.domain.service.PriorityService;
 import per.zongwlee.issue.infra.enums.StatusEnums;
 import per.zongwlee.issue.infra.feign.UserFeignClient;
 import per.zongwlee.issue.infra.mapper.IssueMapper;
+import per.zongwlee.issue.infra.utils.AgileModelMapper;
+import per.zongwlee.issue.infra.utils.ConvertUtil;
+
+import java.util.Optional;
 
 /**
  * @author zongw.lee@gmail.com
@@ -30,7 +32,8 @@ public class IssueServiceImpl extends BaseServiceImpl<Issue> implements IssueSer
     @Autowired
     private IssueMapper issueMapper;
 
-    private final ModelMapper modelMapper = new ModelMapper();
+    @Autowired
+    AgileModelMapper modelMapper;
 
     @Autowired
     UserFeignClient userFeignClient;
@@ -41,14 +44,15 @@ public class IssueServiceImpl extends BaseServiceImpl<Issue> implements IssueSer
     @Override
     public Page<IssueDTO> pageQuery(PageRequest pageRequest) {
         Issue issue = getQueryIssue(null);
-        return ConvertPageHelper.convertPage(PageHelper.doPageAndSort(
+        Page<IssueDTO> page = ConvertUtil.convertPage(PageHelper.doPageAndSort(
                 pageRequest, () -> issueMapper.select(issue)), IssueDTO.class);
+        return loadIssueDTOPage(page);
     }
 
     @Override
     public Page<IssueDTO> pageQueryBacklog(PageRequest pageRequest) {
         Issue issue = getQueryIssue(StatusEnums.backlog);
-        Page<IssueDTO> page = ConvertPageHelper.convertPage(PageHelper.doPageAndSort(
+        Page<IssueDTO> page = ConvertUtil.convertPage(PageHelper.doPageAndSort(
                 pageRequest, () -> issueMapper.select(issue)), IssueDTO.class);
         return loadIssueDTOPage(page);
     }
@@ -56,7 +60,7 @@ public class IssueServiceImpl extends BaseServiceImpl<Issue> implements IssueSer
     @Override
     public Page<IssueDTO> pageQueryActiveMatters(PageRequest pageRequest) {
         Issue issue = getQueryIssue(StatusEnums.active);
-        Page<IssueDTO> page = ConvertPageHelper.convertPage(PageHelper.doPageAndSort(
+        Page<IssueDTO> page = ConvertUtil.convertPage(PageHelper.doPageAndSort(
                 pageRequest, () -> issueMapper.select(issue)), IssueDTO.class);
         return loadIssueDTOPage(page);
     }
@@ -64,16 +68,25 @@ public class IssueServiceImpl extends BaseServiceImpl<Issue> implements IssueSer
     @Override
     public Page<IssueDTO> pageQueryFinishedMatters(PageRequest pageRequest) {
         Issue issue = getQueryIssue(StatusEnums.finished);
-        Page<IssueDTO> page = ConvertPageHelper.convertPage(PageHelper.doPageAndSort(
+        Page<IssueDTO> page = ConvertUtil.convertPage(PageHelper.doPageAndSort(
                 pageRequest, () -> issueMapper.select(issue)), IssueDTO.class);
         return loadIssueDTOPage(page);
+    }
+
+    @Override
+    public IssueDTO queryById(Long id) {
+        IssueDTO res = modelMapper.convert(issueMapper.selectByPrimaryKey(id), IssueDTO.class);
+        res.setHandler(userFeignClient.queryById(res.getHandlerId()).getBody());
+        res.setReporter(userFeignClient.queryById(res.getReporterId()).getBody());
+        res.setPriority(modelMapper.convert(priorityService.selectByPrimaryKey(res.getPriorityId()), PriorityDTO.class));
+        return res;
     }
 
     private Page<IssueDTO> loadIssueDTOPage(Page<IssueDTO> page) {
         page.getContent().forEach(v -> {
             v.setHandler(userFeignClient.queryById(v.getHandlerId()).getBody());
             v.setReporter(userFeignClient.queryById(v.getReporterId()).getBody());
-            v.setPriority(modelMapper.map(priorityService.selectByPrimaryKey(v.getPriorityId()), PriorityDTO.class));
+            v.setPriority(modelMapper.convert(priorityService.selectByPrimaryKey(v.getPriorityId()), PriorityDTO.class));
         });
         return page;
     }
@@ -81,23 +94,24 @@ public class IssueServiceImpl extends BaseServiceImpl<Issue> implements IssueSer
     private Issue getQueryIssue(StatusEnums status) {
         Issue issue = new Issue();
         issue.setType(0L);
-        issue.setStatusId(status.getStatus());
+        Optional.ofNullable(status).ifPresent(v -> issue.setStatusId(v.getStatus()));
         return issue;
     }
 
     @Override
     public IssueDTO create(IssueDTO issueDTO) {
-        Issue issue = modelMapper.map(issueDTO, Issue.class);
+        Issue issue = modelMapper.convert(issueDTO, Issue.class);
         if (issueMapper.insert(issue) != 1)
             throw new CommonException("error.insert.issue");
-        return modelMapper.map(issueMapper.selectOne(issue), IssueDTO.class);
+        return modelMapper.convert(issueMapper.selectOne(issue), IssueDTO.class);
     }
 
     @Override
     public IssueDTO updateIssue(IssueDTO issueDTO) {
-        Issue issue = modelMapper.map(issueDTO, Issue.class);
+        Issue issue = modelMapper.convert(issueDTO, Issue.class);
+        issue.setObjectVersionNumber(issueMapper.selectByPrimaryKey(issue.getId()).getObjectVersionNumber());
         if (issueMapper.updateByPrimaryKey(issue) != 1)
             throw new CommonException("error.update.issue");
-        return modelMapper.map(issueMapper.selectByPrimaryKey(issue), IssueDTO.class);
+        return modelMapper.convert(issueMapper.selectByPrimaryKey(issue), IssueDTO.class);
     }
 }

@@ -41,10 +41,10 @@ hystrix:
       execution:
         isolation:
           thread:
-            timeoutInMilliseconds: 20000
+            timeoutInMilliseconds: 30000
 ribbon:
-  ReadTimeout: 20000
-  ConnectTimeout: 20000
+  ReadTimeout: 30000
+  ConnectTimeout: 30000
   httpclient:
     enabled: false
   okhttp:

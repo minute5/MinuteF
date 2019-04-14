@@ -1,4 +1,4 @@
-package per.zongwlee.issue.domain.entity;
+package per.zongwlee.test.manager.domain.entity;
 
 import io.choerodon.mybatis.annotation.ModifyAudit;
 import io.choerodon.mybatis.annotation.VersionAudit;
@@ -16,7 +16,7 @@ import java.util.Date;
 @ModifyAudit
 @VersionAudit
 @Table(name = "issue")
-public class Issue extends AuditDomain {
+public class TestCase extends AuditDomain {
 
     @Id
     @GeneratedValue
@@ -30,18 +30,6 @@ public class Issue extends AuditDomain {
     private Long statusId;
     private Date handleDate;
     private Date solveDate;
-
-    private Long objectVersionNumber;
-
-    @Override
-    public Long getObjectVersionNumber() {
-        return objectVersionNumber;
-    }
-
-    @Override
-    public void setObjectVersionNumber(Long objectVersionNumber) {
-        this.objectVersionNumber = objectVersionNumber;
-    }
 
     public Long getId() {
         return id;

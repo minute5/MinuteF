@@ -4,6 +4,7 @@ package per.zongwlee.oauth.api.service;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import per.zongwlee.oauth.api.dto.AccessToken;
+import per.zongwlee.oauth.api.dto.ReturnRoleDTO;
 import per.zongwlee.oauth.api.dto.RoleDTO;
 import per.zongwlee.oauth.domain.entity.RoleE;
 
@@ -16,13 +17,13 @@ public interface RoleService {
 
     String register(RoleDTO roleDTO);
 
-    RoleDTO updateSelective(RoleDTO roleDTO);
+    ReturnRoleDTO updateSelective(RoleDTO roleDTO);
 
     boolean checkEmail(String email);
 
-    RoleDTO queryById(Long roleId);
+    ReturnRoleDTO queryById(Long roleId);
 
-    Page<RoleDTO> pageQuery(PageRequest pageRequest);
+    Page<ReturnRoleDTO> pageQuery(PageRequest pageRequest);
 
     boolean checkAuthorazition(String jwtToken);
 }

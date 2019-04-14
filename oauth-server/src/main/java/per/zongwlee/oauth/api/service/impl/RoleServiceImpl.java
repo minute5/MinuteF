@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import per.zongwlee.oauth.api.dto.AccessToken;
+import per.zongwlee.oauth.api.dto.ReturnRoleDTO;
 import per.zongwlee.oauth.api.dto.RoleDTO;
 import per.zongwlee.oauth.api.service.RoleService;
 import per.zongwlee.oauth.api.validator.UserValidator;
@@ -81,12 +82,12 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public RoleDTO updateSelective(RoleDTO roleDTO) {
+    public ReturnRoleDTO updateSelective(RoleDTO roleDTO) {
         RoleE roleE = modelMapper.map(roleDTO, RoleE.class);
         if (roleMapper.updateByPrimaryKeySelective(roleE) != 1) {
             throw new CommonException("error.role.update");
         }
-        RoleDTO res = modelMapper.map(roleMapper.selectOne(roleE),RoleDTO.class);
+        ReturnRoleDTO res = modelMapper.map(roleMapper.selectOne(roleE), ReturnRoleDTO.class);
         res.loadRoleType();
         return res;
     }
@@ -103,17 +104,17 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public RoleDTO queryById(Long roleId) {
-        RoleDTO res = modelMapper.map(roleMapper.selectByPrimaryKey(roleId),RoleDTO.class);
+    public ReturnRoleDTO queryById(Long roleId) {
+        ReturnRoleDTO res = modelMapper.map(roleMapper.selectByPrimaryKey(roleId), ReturnRoleDTO.class);
         res.loadRoleType();
         return res;
     }
 
     @Override
-    public Page<RoleDTO> pageQuery(PageRequest pageRequest) {
-        Page<RoleDTO> roleEPage = ConvertPageHelper.convertPage(PageHelper.doPageAndSort(
-                pageRequest,() -> roleMapper.selectAll()),RoleDTO.class);
-        roleEPage.getContent().forEach(RoleDTO::loadRoleType);
+    public Page<ReturnRoleDTO> pageQuery(PageRequest pageRequest) {
+        Page<ReturnRoleDTO> roleEPage = ConvertPageHelper.convertPage(PageHelper.doPageAndSort(
+                pageRequest, () -> roleMapper.selectAll()), ReturnRoleDTO.class);
+        roleEPage.getContent().forEach(ReturnRoleDTO::loadRoleType);
         return roleEPage;
     }
 

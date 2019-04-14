@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import per.zongwlee.oauth.api.dto.AccessToken;
+import per.zongwlee.oauth.api.dto.ReturnRoleDTO;
 import per.zongwlee.oauth.api.dto.RoleDTO;
 import per.zongwlee.oauth.api.service.RoleService;
 
@@ -46,21 +47,21 @@ public class OauthController {
     }
 
     @GetMapping(value = "/{role_id}")
-    public ResponseEntity<RoleDTO> queryById(@PathVariable Long roleId) {
+    public ResponseEntity<ReturnRoleDTO> queryById(@PathVariable("role_id") Long roleId) {
         return Optional.ofNullable(roleService.queryById(roleId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.user.query"));
     }
 
     @GetMapping(value = "/list/all")
-    public ResponseEntity<Page<RoleDTO>> query(@ApiParam(value = "分页参数") PageRequest pageRequest) {
+    public ResponseEntity<Page<ReturnRoleDTO>> query(@ApiParam(value = "分页参数") PageRequest pageRequest) {
         return Optional.ofNullable(roleService.pageQuery(pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.user.query"));
     }
 
     @PutMapping(value = "/update")
-    public ResponseEntity<RoleDTO> updateSelective(@RequestBody RoleDTO roleDTO) {
+    public ResponseEntity<ReturnRoleDTO> updateSelective(@RequestBody RoleDTO roleDTO) {
         return Optional.ofNullable(roleService.updateSelective(roleDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.user.update"));

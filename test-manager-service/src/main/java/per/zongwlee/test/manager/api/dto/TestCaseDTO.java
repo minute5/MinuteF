@@ -1,25 +1,15 @@
-package per.zongwlee.issue.domain.entity;
+package per.zongwlee.test.manager.api.dto;
 
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
+import per.zongwlee.oauth.api.dto.RoleDTO;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.util.Date;
 
 /**
  * @author zongw.lee@gmail.com
  * @since 2019/04/12
  */
-@ModifyAudit
-@VersionAudit
-@Table(name = "issue")
-public class Issue extends AuditDomain {
+public class TestCaseDTO {
 
-    @Id
-    @GeneratedValue
     private Long id;
 
     private String name;
@@ -31,16 +21,33 @@ public class Issue extends AuditDomain {
     private Date handleDate;
     private Date solveDate;
 
-    private Long objectVersionNumber;
+    private RoleDTO reporter;
+    private RoleDTO handler;
 
-    @Override
-    public Long getObjectVersionNumber() {
-        return objectVersionNumber;
+    private PriorityDTO priority;
+
+    public RoleDTO getReporter() {
+        return reporter;
     }
 
-    @Override
-    public void setObjectVersionNumber(Long objectVersionNumber) {
-        this.objectVersionNumber = objectVersionNumber;
+    public void setReporter(RoleDTO reporter) {
+        this.reporter = reporter;
+    }
+
+    public RoleDTO getHandler() {
+        return handler;
+    }
+
+    public void setHandler(RoleDTO handler) {
+        this.handler = handler;
+    }
+
+    public PriorityDTO getPriority() {
+        return priority;
+    }
+
+    public void setPriority(PriorityDTO priority) {
+        this.priority = priority;
     }
 
     public Long getId() {

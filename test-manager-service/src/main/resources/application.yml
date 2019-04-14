@@ -1,64 +1,34 @@
+# application.yml
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/test_manager_service?useUnicode=true&characterEncoding=utf-8&useSSL=false
-    username: choerodon
-    password: 123456
-  aop:
-    auto: true
-  http:
-    encoding:
-      charset: UTF-8
-      force: true
-      enabled: true
-    multipart:
-      max-file-size: 30MB
-      max-request-size: 30MB
-  redis:
-    host: localhost
-    port: 6379
-choerodon:
-  saga:
-    consumer:
-      enabled: true # 是否启用消费端
-      thread-num: 5  # 消费线程数
-      max-poll-size: 200 # 每次拉取的最大消息数量
-      poll-interval-ms: 1000 # 拉取消息的间隔(毫秒)，默认1000毫秒
-  schedule:
-    consumer:
-      enabled: true # 启用任务调度消费端
-      thread-num: 1 # 任务调度消费线程数
-      poll-interval-ms: 1000 # 拉取间隔，默认1000毫秒
+    url: jdbc:mysql://106.14.187.2:3306/agile-test-manager-service?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: 7414
 eureka:
   instance:
     preferIpAddress: true
-    leaseRenewalIntervalInSeconds: 1
-    leaseExpirationDurationInSeconds: 3
+    leaseRenewalIntervalInSeconds: 10
+    leaseExpirationDurationInSeconds: 30
+    metadata-map:
+      VERSION: v1
   client:
     serviceUrl:
-      defaultZone: http://localhost:8000/eureka/
-    registryFetchIntervalSeconds: 1
-security:
-  basic:
-    enabled: false
-  ignored:
-  - /v2/api-docs
+      defaultZone: http://106.14.187.2:8000/eureka/
+    registryFetchIntervalSeconds: 10
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 15000
 mybatis:
   mapperLocations: classpath*:/mapper/*.xml
-  configuration:
+  configuration: # 数据库下划线转驼峰配置
     mapUnderscoreToCamelCase: true
-feign:
-  hystrix:
-    shareSecurityContext: true
-    command:
-      default:
-        execution:
-          isolation:
-            thread:
-              timeoutInMilliseconds: 30000
+services:
+  attachment:
+    url: example.com
 ribbon:
-  ConnectTimeout: 5000
-  ReadTimeout: 5000
-logging:
-  level:
-    root: info
-    io.choerodon.test.manager: debug
+  ReadTimeout: 30000
+  ConnectTimeout: 30000

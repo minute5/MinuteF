@@ -20,6 +20,8 @@ public interface IssueService extends BaseService<Issue> {
 
     Page<IssueDTO> pageQueryFinishedMatters(PageRequest pageRequest);
 
+    IssueDTO queryById(Long id);
+
     IssueDTO create(IssueDTO issueDTO);
 
     IssueDTO updateIssue(IssueDTO issueDTO);
