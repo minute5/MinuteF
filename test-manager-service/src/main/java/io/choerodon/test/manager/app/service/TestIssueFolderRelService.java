@@ -3,10 +3,6 @@ package io.choerodon.test.manager.app.service;
 import io.choerodon.agile.api.dto.IssueCreateDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import io.choerodon.test.manager.api.dto.IssueComponentDetailFolderRelDTO;
-import io.choerodon.test.manager.api.dto.IssueInfosDTO;
-import io.choerodon.test.manager.api.dto.TestFolderRelQueryDTO;
-import io.choerodon.test.manager.api.dto.TestIssueFolderRelDTO;
 
 import java.util.List;
 

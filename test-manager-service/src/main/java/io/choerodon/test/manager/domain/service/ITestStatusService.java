@@ -1,6 +1,6 @@
 package io.choerodon.test.manager.domain.service;
 
-import io.choerodon.test.manager.domain.test.manager.entity.TestStatusE;
+import io.choerodon.test.manager.domain.entity.TestStatusE;
 
 import java.util.List;
 

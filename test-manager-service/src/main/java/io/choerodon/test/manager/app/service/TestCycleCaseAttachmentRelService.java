@@ -1,6 +1,5 @@
 package io.choerodon.test.manager.app.service;
 
-import io.choerodon.test.manager.api.dto.TestCycleCaseAttachmentRelDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 /**

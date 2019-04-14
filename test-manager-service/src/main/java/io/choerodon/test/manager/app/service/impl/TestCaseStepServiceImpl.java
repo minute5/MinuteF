@@ -2,11 +2,9 @@ package io.choerodon.test.manager.app.service.impl;
 
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.test.manager.api.dto.TestCaseStepDTO;
 import io.choerodon.test.manager.app.service.TestCaseStepService;
-import io.choerodon.test.manager.domain.service.ITestCaseStepService;
 import io.choerodon.test.manager.domain.service.ITestStatusService;
-import io.choerodon.test.manager.domain.test.manager.entity.TestCaseStepE;
+import io.choerodon.test.manager.domain.entity.TestCaseStepE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

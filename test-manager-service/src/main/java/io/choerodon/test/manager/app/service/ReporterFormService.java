@@ -3,8 +3,8 @@ package io.choerodon.test.manager.app.service;
 import io.choerodon.agile.api.dto.SearchDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import io.choerodon.test.manager.domain.test.manager.entity.DefectReporterFormE;
-import io.choerodon.test.manager.domain.test.manager.entity.ReporterFormE;
+import io.choerodon.test.manager.domain.entity.DefectReporterFormE;
+import io.choerodon.test.manager.domain.entity.ReporterFormE;
 
 import java.util.List;
 

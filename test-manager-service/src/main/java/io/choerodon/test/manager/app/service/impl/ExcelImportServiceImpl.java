@@ -6,7 +6,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import io.choerodon.test.manager.infra.common.utils.ExcelUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -19,10 +18,8 @@ import org.springframework.stereotype.Service;
 import io.choerodon.agile.api.dto.IssueDTO;
 import io.choerodon.test.manager.app.service.ExcelImportService;
 import io.choerodon.test.manager.app.service.ExcelService;
-import io.choerodon.test.manager.domain.service.IExcelImportService;
-import io.choerodon.test.manager.domain.service.impl.IExcelImportServiceImpl;
-import io.choerodon.test.manager.domain.test.manager.entity.TestFileLoadHistoryE;
-import io.choerodon.test.manager.domain.test.manager.entity.TestIssueFolderE;
+import io.choerodon.test.manager.domain.entity.TestFileLoadHistoryE;
+import io.choerodon.test.manager.domain.entity.TestIssueFolderE;
 import io.choerodon.test.manager.infra.feign.IssueFeignClient;
 
 @Service

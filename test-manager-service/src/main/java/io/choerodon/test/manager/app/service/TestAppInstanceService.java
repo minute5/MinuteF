@@ -3,8 +3,6 @@ package io.choerodon.test.manager.app.service;
 import io.choerodon.asgard.api.dto.QuartzTask;
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
 import io.choerodon.devops.api.dto.ReplaceResult;
-import io.choerodon.test.manager.api.dto.ApplicationDeployDTO;
-import io.choerodon.test.manager.api.dto.TestAppInstanceDTO;
 
 import java.util.Map;
 

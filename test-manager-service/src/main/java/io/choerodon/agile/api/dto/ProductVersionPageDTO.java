@@ -1,7 +1,5 @@
 package io.choerodon.agile.api.dto;
 
-import io.choerodon.test.manager.api.dto.TestCycleDTO;
-
 import javax.persistence.Transient;
 import java.util.Date;
 import java.util.List;

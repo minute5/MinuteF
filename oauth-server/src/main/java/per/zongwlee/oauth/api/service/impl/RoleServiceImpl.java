@@ -1,11 +1,14 @@
 package per.zongwlee.oauth.api.service.impl;
 
+import io.choerodon.core.convertor.ConvertPageHelper;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.mybatis.pagehelper.PageHelper;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 import per.zongwlee.oauth.api.dto.AccessToken;
 import per.zongwlee.oauth.api.dto.RoleDTO;
 import per.zongwlee.oauth.api.service.RoleService;
@@ -22,6 +25,8 @@ import per.zongwlee.oauth.infra.mapper.RoleMapper;
 public class RoleServiceImpl implements RoleService {
 
     private static final String USERNAMECANNOTBENULL = "error.name.can.not.be.empty";
+
+    private static final ModelMapper modelMapper = new ModelMapper();
 
     @Autowired
     private RoleMapper roleMapper;
@@ -47,8 +52,8 @@ public class RoleServiceImpl implements RoleService {
         RoleE roleE = new RoleE();
         roleE.setName(roleDTO.getName());
         RoleE res = roleMapper.selectOne(roleE);
-        if(bCryptPasswordEncoder.matches(roleDTO.getPassword(),res.getPassword())){
-            return JwtTokenUtils.createToken(res.getName(),res.getStringType(),roleDTO.getIsRememberMe());
+        if (bCryptPasswordEncoder.matches(roleDTO.getPassword(), res.getPassword())) {
+            return JwtTokenUtils.createToken(res.getName(), res.getStringType(), roleDTO.getIsRememberMe());
         }
         return null;
     }
@@ -70,25 +75,26 @@ public class RoleServiceImpl implements RoleService {
         RoleE roleE = modelMapper.map(roleDTO, RoleE.class);
         roleE.setPassword(bCryptPasswordEncoder.encode(roleE.getPassword()));
         if (roleMapper.insert(roleE) != 1) {
-            throw new CommonException( "error.user.insert");
+            throw new CommonException("error.user.insert");
         }
         return "success";
     }
 
     @Override
-    public RoleE updateSelective(RoleDTO roleDTO) {
-        ModelMapper modelMapper = new ModelMapper();
+    public RoleDTO updateSelective(RoleDTO roleDTO) {
         RoleE roleE = modelMapper.map(roleDTO, RoleE.class);
         if (roleMapper.updateByPrimaryKeySelective(roleE) != 1) {
             throw new CommonException("error.role.update");
         }
-        return roleMapper.selectByPrimaryKey(roleE.getId());
+        RoleDTO res = modelMapper.map(roleMapper.selectOne(roleE),RoleDTO.class);
+        res.loadRoleType();
+        return res;
     }
 
     @Override
     public boolean checkEmail(String email) {
         RoleE roleEEmail = new RoleE();
-        if(!userValidator.emailValidator(email)){
+        if (!userValidator.emailValidator(email)) {
             throw new CommonException("error.email.format");
         }
         roleEEmail.setEmail(email);
@@ -97,7 +103,23 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    public RoleDTO queryById(Long roleId) {
+        RoleDTO res = modelMapper.map(roleMapper.selectByPrimaryKey(roleId),RoleDTO.class);
+        res.loadRoleType();
+        return res;
+    }
+
+    @Override
+    public Page<RoleDTO> pageQuery(PageRequest pageRequest) {
+        Page<RoleDTO> roleEPage = ConvertPageHelper.convertPage(PageHelper.doPageAndSort(
+                pageRequest,() -> roleMapper.selectAll()),RoleDTO.class);
+        roleEPage.getContent().forEach(RoleDTO::loadRoleType);
+        return roleEPage;
+    }
+
+    @Override
     public boolean checkAuthorazition(String jwtToken) {
         return !JwtTokenUtils.isExpiration(jwtToken);
     }
+
 }

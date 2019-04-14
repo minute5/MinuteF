@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.ProductVersionDTO;
 import io.choerodon.agile.api.dto.ProductVersionPageDTO;
 import io.choerodon.core.domain.Page;
-import io.choerodon.test.manager.api.dto.TestCycleDTO;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;

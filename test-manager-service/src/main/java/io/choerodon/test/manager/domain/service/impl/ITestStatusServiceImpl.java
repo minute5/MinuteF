@@ -1,7 +1,7 @@
 package io.choerodon.test.manager.domain.service.impl;
 
 import io.choerodon.test.manager.domain.repository.TestStatusRepository;
-import io.choerodon.test.manager.domain.test.manager.entity.TestStatusE;
+import io.choerodon.test.manager.domain.entity.TestStatusE;
 import io.choerodon.test.manager.domain.service.ITestStatusService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

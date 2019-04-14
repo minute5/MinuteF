@@ -8,6 +8,7 @@ databaseChangeLog(logicalFilePath: 'issue.groovy') {
                 constraints(primaryKey: true)
             }
             column(name: 'name', type: 'VARCHAR(255)', remarks: '问题名称')
+            column(name: 'type', type: 'int(10)', remarks: '问题类型， 问题和测试用例')
             column(name: 'reporter_id', type: 'BIGINT', remarks: '报告人ID')
             column(name: 'handler_id', type: 'BIGINT', remarks: '处理人ID')
             column(name: 'priority_id', type: 'BIGINT', remarks: '优先级ID')

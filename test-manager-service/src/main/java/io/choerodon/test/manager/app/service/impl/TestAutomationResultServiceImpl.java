@@ -8,10 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.test.manager.api.dto.TestAutomationResultDTO;
 import io.choerodon.test.manager.app.service.TestAutomationResultService;
-import io.choerodon.test.manager.domain.service.ITestAutomationResultService;
-import io.choerodon.test.manager.domain.test.manager.entity.TestAutomationResultE;
+import io.choerodon.test.manager.domain.entity.TestAutomationResultE;
 
 @Service
 public class TestAutomationResultServiceImpl implements TestAutomationResultService {

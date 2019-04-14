@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="per.zongwlee.issue.infra.mapper.IssueMapper">
+
+
+    <!--<resultMap type="per.zongwlee.issue.domain.entity.Issue" id="BaseResultMap">-->
+        <!--<id column="id" property="id"/>-->
+        <!--<id column="code" property="code"/>-->
+        <!--<id column="app_id" property="appId"/>-->
+        <!--<id column="app_version_id" property="appVersionId"/>-->
+        <!--<id column="project_version_id" property="projectVersionId"/>-->
+        <!--<id column="env_id" property="envId"/>-->
+        <!--<id column="command_id" property="commandId"/>-->
+        <!--<id column="project_id" property="projectId"/>-->
+        <!--<id column="pod_status" property="podStatus"/>-->
+        <!--<id column="pod_name" property="podName"/>-->
+        <!--<id column="container_name" property="containerName"/>-->
+        <!--<id column="log_id" property="logId"/>-->
+    <!--</resultMap>-->
+
+
+</mapper>

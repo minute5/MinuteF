@@ -1,7 +1,5 @@
 package io.choerodon.test.manager.app.service;
 
-import io.choerodon.test.manager.api.dto.TestCaseStepDTO;
-
 import java.util.List;
 
 /**

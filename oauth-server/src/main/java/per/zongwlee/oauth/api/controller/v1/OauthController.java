@@ -1,20 +1,17 @@
 package per.zongwlee.oauth.api.controller.v1;
 
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import per.zongwlee.oauth.api.dto.AccessToken;
 import per.zongwlee.oauth.api.dto.RoleDTO;
 import per.zongwlee.oauth.api.service.RoleService;
-import per.zongwlee.oauth.domain.entity.RoleE;
 
-import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
 import java.util.Optional;
 
 
@@ -33,14 +30,14 @@ public class OauthController {
     public ResponseEntity<AccessToken> login(@RequestBody RoleDTO roleDTO) {
         return Optional.ofNullable(roleService.login(roleDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.login"));
+                .orElseThrow(() -> new CommonException("error.user.login"));
     }
 
     @PostMapping(value = "/register")
     public ResponseEntity<String> register(@RequestBody RoleDTO roleDTO) {
         return Optional.ofNullable(roleService.register(roleDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.register"));
+                .orElseThrow(() -> new CommonException("error.user.register"));
     }
 
     @GetMapping(value = "/check/authorazition")
@@ -48,11 +45,25 @@ public class OauthController {
         return roleService.checkAuthorazition(jwtToken);
     }
 
+    @GetMapping(value = "/{role_id}")
+    public ResponseEntity<RoleDTO> queryById(@PathVariable Long roleId) {
+        return Optional.ofNullable(roleService.queryById(roleId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.user.query"));
+    }
+
+    @GetMapping(value = "/list/all")
+    public ResponseEntity<Page<RoleDTO>> query(@ApiParam(value = "分页参数") PageRequest pageRequest) {
+        return Optional.ofNullable(roleService.pageQuery(pageRequest))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.user.query"));
+    }
+
     @PutMapping(value = "/update")
-    public ResponseEntity<RoleE> updateSelective(@RequestBody RoleDTO roleDTO) {
+    public ResponseEntity<RoleDTO> updateSelective(@RequestBody RoleDTO roleDTO) {
         return Optional.ofNullable(roleService.updateSelective(roleDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.update"));
+                .orElseThrow(() -> new CommonException("error.user.update"));
     }
 
     @GetMapping(value = "/check/email")

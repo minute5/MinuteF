@@ -2,10 +2,6 @@ package io.choerodon.test.manager.app.service;
 
 import java.util.List;
 
-import io.choerodon.test.manager.api.dto.TestCycleCaseDTO;
-import io.choerodon.test.manager.api.dto.TestCycleCaseDefectRelDTO;
-import io.choerodon.test.manager.api.dto.TestCycleCaseStepDTO;
-
 /**
  * Created by 842767365@qq.com on 6/11/18.
  */

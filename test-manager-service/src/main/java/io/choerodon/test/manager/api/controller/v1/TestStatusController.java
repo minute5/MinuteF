@@ -3,7 +3,6 @@ package io.choerodon.test.manager.api.controller.v1;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
-import io.choerodon.test.manager.api.dto.TestStatusDTO;
 import io.choerodon.test.manager.app.service.TestStatusService;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.test.manager.infra.mapper.TestStatusMapper;

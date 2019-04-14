@@ -1,7 +1,5 @@
 package io.choerodon.devops.api.dto;
 
-import io.choerodon.test.manager.api.dto.ApplicationDeployDTO;
-
 public class DevopsApplicationDeployDTO {
     private Long appVersionId;
     private Long environmentId;
