@@ -9,5 +9,5 @@ import per.zongwlee.test.manager.domain.entity.TestCase;
  * @since 2019/04/12
  */
 @Component
-public interface IssueMapper extends BaseMapper<TestCase> {
+public interface TestCaseMapper extends BaseMapper<TestCase> {
 }

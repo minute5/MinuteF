@@ -20,8 +20,10 @@ public interface TestCaseService extends BaseService<TestCase> {
 
     Page<TestCaseDTO> pageQueryFinishedMatters(PageRequest pageRequest);
 
+    TestCaseDTO queryById(Long id);
+
     TestCaseDTO create(TestCaseDTO testCaseDTO);
 
-    TestCaseDTO updateIssue(TestCaseDTO testCaseDTO);
+    TestCaseDTO updateCase(TestCaseDTO testCaseDTO);
 
 }

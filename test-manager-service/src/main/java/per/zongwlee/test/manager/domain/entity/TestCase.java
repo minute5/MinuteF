@@ -31,6 +31,18 @@ public class TestCase extends AuditDomain {
     private Date handleDate;
     private Date solveDate;
 
+    private Long objectVersionNumber;
+
+    @Override
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
+    }
+
+    @Override
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
     public Long getId() {
         return id;
     }

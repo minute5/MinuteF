@@ -42,7 +42,7 @@ public class IssueController extends BaseController {
 
     @ApiOperation(value = "删除问题")
     @DeleteMapping(value = "/{issue_id}")
-    public ResponseEntity<Boolean> delete(@PathVariable("priority_id") Long issueId) {
+    public ResponseEntity<Boolean> delete(@PathVariable("issue_id") Long issueId) {
         return new ResponseEntity<>(issueService.deleteByPrimaryKey(issueId) == 1, HttpStatus.OK);
     }
 
