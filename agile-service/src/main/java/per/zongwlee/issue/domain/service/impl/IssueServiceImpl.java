@@ -42,32 +42,32 @@ public class IssueServiceImpl extends BaseServiceImpl<Issue> implements IssueSer
     PriorityService priorityService;
 
     @Override
-    public Page<IssueDTO> pageQuery(PageRequest pageRequest) {
-        Issue issue = getQueryIssue(null);
+    public Page<IssueDTO> pageQuery(PageRequest pageRequest, Long type) {
+        Issue issue = getQueryIssue(null, type);
         Page<IssueDTO> page = ConvertUtil.convertPage(PageHelper.doPageAndSort(
                 pageRequest, () -> issueMapper.select(issue)), IssueDTO.class);
         return loadIssueDTOPage(page);
     }
 
     @Override
-    public Page<IssueDTO> pageQueryBacklog(PageRequest pageRequest) {
-        Issue issue = getQueryIssue(StatusEnums.backlog);
+    public Page<IssueDTO> pageQueryBacklog(PageRequest pageRequest, Long type) {
+        Issue issue = getQueryIssue(StatusEnums.backlog, type);
         Page<IssueDTO> page = ConvertUtil.convertPage(PageHelper.doPageAndSort(
                 pageRequest, () -> issueMapper.select(issue)), IssueDTO.class);
         return loadIssueDTOPage(page);
     }
 
     @Override
-    public Page<IssueDTO> pageQueryActiveMatters(PageRequest pageRequest) {
-        Issue issue = getQueryIssue(StatusEnums.active);
+    public Page<IssueDTO> pageQueryActiveMatters(PageRequest pageRequest, Long type) {
+        Issue issue = getQueryIssue(StatusEnums.active, type);
         Page<IssueDTO> page = ConvertUtil.convertPage(PageHelper.doPageAndSort(
                 pageRequest, () -> issueMapper.select(issue)), IssueDTO.class);
         return loadIssueDTOPage(page);
     }
 
     @Override
-    public Page<IssueDTO> pageQueryFinishedMatters(PageRequest pageRequest) {
-        Issue issue = getQueryIssue(StatusEnums.finished);
+    public Page<IssueDTO> pageQueryFinishedMatters(PageRequest pageRequest, Long type) {
+        Issue issue = getQueryIssue(StatusEnums.finished, type);
         Page<IssueDTO> page = ConvertUtil.convertPage(PageHelper.doPageAndSort(
                 pageRequest, () -> issueMapper.select(issue)), IssueDTO.class);
         return loadIssueDTOPage(page);
@@ -91,9 +91,9 @@ public class IssueServiceImpl extends BaseServiceImpl<Issue> implements IssueSer
         return page;
     }
 
-    private Issue getQueryIssue(StatusEnums status) {
+    private Issue getQueryIssue(StatusEnums status, Long type) {
         Issue issue = new Issue();
-        issue.setType(0L);
+        issue.setType(type);
         Optional.ofNullable(status).ifPresent(v -> issue.setStatusId(v.getStatus()));
         return issue;
     }

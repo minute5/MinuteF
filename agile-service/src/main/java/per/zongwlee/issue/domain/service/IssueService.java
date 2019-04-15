@@ -12,13 +12,14 @@ import per.zongwlee.issue.domain.entity.Issue;
  */
 public interface IssueService extends BaseService<Issue> {
 
-    Page<IssueDTO> pageQuery(PageRequest pageRequest);
+    //0是issue，1是testCase
+    Page<IssueDTO> pageQuery(PageRequest pageRequest, Long type);
 
-    Page<IssueDTO> pageQueryBacklog(PageRequest pageRequest);
+    Page<IssueDTO> pageQueryBacklog(PageRequest pageRequest, Long type);
 
-    Page<IssueDTO> pageQueryActiveMatters(PageRequest pageRequest);
+    Page<IssueDTO> pageQueryActiveMatters(PageRequest pageRequest, Long type);
 
-    Page<IssueDTO> pageQueryFinishedMatters(PageRequest pageRequest);
+    Page<IssueDTO> pageQueryFinishedMatters(PageRequest pageRequest, Long type);
 
     IssueDTO queryById(Long id);
 
