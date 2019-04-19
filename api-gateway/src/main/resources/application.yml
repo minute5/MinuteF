@@ -34,7 +34,8 @@ zuul:
       serviceId: test-manager-service
   semaphore:
     max-semaphores: 300
-  sensitiveHeaders: Cookie,Set-Cookie
+  sensitiveHeaders: Cookie,Set-Cookie,Access-Control-Allow-Origin
+  ignored-headers: Access-Control-Allow-Origin,H-APP-Id,Token,APPToken
 hystrix:
   command:
     default:

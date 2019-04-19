@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.retry.annotation.EnableRetry;
 import per.zongwlee.gateway.filter.AccessFilter;
+import per.zongwlee.gateway.filter.CorsFilter;
 
 @EnableFeignClients("per.zongwlee.gateway")
 @EnableRetry
@@ -26,5 +27,10 @@ public class GatewayApplication {
     @Bean
     public AccessFilter accessFilter() {
         return new AccessFilter();
+    }
+
+    @Bean
+    public CorsFilter accessFilter2() {
+        return new CorsFilter();
     }
 }
