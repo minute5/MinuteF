@@ -62,7 +62,7 @@ public class RoleServiceImpl implements RoleService {
         if (bCryptPasswordEncoder.matches(roleDTO.getPassword(), res.getPassword())) {
             AccessToken accessToken = JwtTokenUtils.createToken(res.getName(), res.getStringType(), roleDTO.getIsRememberMe());
             accessToken.setUserId(res.getId());
-            accessToken.setGitlabUserId(devopsFeignClient.queryUserByUsername(res.getName()).getBody());
+            accessToken.setGitlabUserId(res.getGitlabId());
             return accessToken;
         }
         return null;

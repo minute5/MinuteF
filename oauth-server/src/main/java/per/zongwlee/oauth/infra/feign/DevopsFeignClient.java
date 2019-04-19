@@ -37,5 +37,5 @@ public interface DevopsFeignClient {
      * @return User
      */
     @GetMapping(value = "/v1/users/{username}/id")
-    ResponseEntity<Integer> queryUserByUsername(@PathVariable String username);
+    ResponseEntity<Integer> queryUserByUsername(@PathVariable(value = "username") String username);
 }

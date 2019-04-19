@@ -124,7 +124,7 @@ public class UserController {
     @GetMapping(value = "/{username}/id")
     public ResponseEntity<Integer> queryUserIdByUsername(
             @ApiParam(value = "用户名称", required = true)
-            @PathVariable String username) {
+            @PathVariable(value = "username") String username) {
         return Optional.ofNullable(userService.queryUserByUsername(username).getId())
                 .map(target -> new ResponseEntity<>(target, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.user.username.get"));
