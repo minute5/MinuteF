@@ -5,10 +5,12 @@ import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import org.gitlab4j.api.models.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import per.zongwlee.oauth.api.dto.AccessToken;
 import per.zongwlee.oauth.api.dto.ReturnRoleDTO;
 import per.zongwlee.oauth.api.dto.RoleDTO;
@@ -16,6 +18,7 @@ import per.zongwlee.oauth.api.service.RoleService;
 import per.zongwlee.oauth.api.validator.UserValidator;
 import per.zongwlee.oauth.domain.entity.RoleE;
 import per.zongwlee.oauth.infra.common.util.JwtTokenUtils;
+import per.zongwlee.oauth.infra.feign.DevopsFeignClient;
 import per.zongwlee.oauth.infra.mapper.RoleMapper;
 
 /**
@@ -31,6 +34,9 @@ public class RoleServiceImpl implements RoleService {
 
     @Autowired
     private RoleMapper roleMapper;
+
+    @Autowired
+    DevopsFeignClient devopsFeignClient;
 
     @Autowired
     private UserValidator userValidator;
@@ -54,13 +60,24 @@ public class RoleServiceImpl implements RoleService {
         roleE.setName(roleDTO.getName());
         RoleE res = roleMapper.selectOne(roleE);
         if (bCryptPasswordEncoder.matches(roleDTO.getPassword(), res.getPassword())) {
-            return JwtTokenUtils.createToken(res.getName(), res.getStringType(), roleDTO.getIsRememberMe());
+            AccessToken accessToken = JwtTokenUtils.createToken(res.getName(), res.getStringType(), roleDTO.getIsRememberMe());
+            accessToken.setUserId(res.getId());
+            accessToken.setGitlabUserId(devopsFeignClient.queryUserByUsername(res.getName()).getBody());
+            return accessToken;
         }
         return null;
     }
 
     @Override
-    public String register(RoleDTO roleDTO) {
+    @Transactional(rollbackFor = Exception.class)
+    public ReturnRoleDTO register(RoleDTO roleDTO) {
+        //gitlab创建用户
+        User user = new User();
+        user.setName(roleDTO.getName());
+        user.setUsername(roleDTO.getName());
+        user.setEmail(roleDTO.getEmail());
+        Integer gitlabId = devopsFeignClient.create(roleDTO.getPassword(), null, user).getBody().getId();
+
         if (roleDTO.getName() == null) {
             throw new CommonException(USERNAMECANNOTBENULL);
         }
@@ -71,14 +88,13 @@ public class RoleServiceImpl implements RoleService {
         if (null != resName) {
             throw new CommonException("error.name.already.exist");
         }
-
-        ModelMapper modelMapper = new ModelMapper();
         RoleE roleE = modelMapper.map(roleDTO, RoleE.class);
+        roleE.setGitlabId(gitlabId);
         roleE.setPassword(bCryptPasswordEncoder.encode(roleE.getPassword()));
         if (roleMapper.insert(roleE) != 1) {
             throw new CommonException("error.user.insert");
         }
-        return "success";
+        return modelMapper.map(roleMapper.selectOne(roleE),ReturnRoleDTO.class);
     }
 
     @Override

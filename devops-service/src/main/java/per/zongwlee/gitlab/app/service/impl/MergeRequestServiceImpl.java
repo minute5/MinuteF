@@ -8,7 +8,7 @@ import org.gitlab4j.api.models.MergeRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import io.choerodon.core.exception.FeignException;
+import io.choerodon.core.exception.CommonException;
 import per.zongwlee.gitlab.app.service.MergeRequestService;
 import per.zongwlee.gitlab.infra.common.client.Gitlab4jClient;
 
@@ -36,7 +36,7 @@ public class MergeRequestServiceImpl implements MergeRequestService {
                     .createMergeRequest(projectId, sourceBranch,
                             targetBranch, title, description, null);
         } catch (GitLabApiException e) {
-            throw new FeignException("error.mergeRequest.create");
+            throw new CommonException("error.mergeRequest.create");
         }
     }
 
@@ -47,7 +47,7 @@ public class MergeRequestServiceImpl implements MergeRequestService {
             return gitlab4jclient.getGitLabApi(userId).getMergeRequestApi()
                     .getMergeRequest(projectId, mergeRequestId);
         } catch (GitLabApiException e) {
-            throw new FeignException("error.mergeRequest.get");
+            throw new CommonException("error.mergeRequest.get");
         }
     }
 
@@ -57,7 +57,7 @@ public class MergeRequestServiceImpl implements MergeRequestService {
             return gitlab4jclient.getGitLabApi(null).getMergeRequestApi()
                     .getMergeRequests(projectId);
         } catch (GitLabApiException e) {
-            throw new FeignException("error.mergeRequests.list");
+            throw new CommonException("error.mergeRequests.list");
         }
     }
 
@@ -74,7 +74,7 @@ public class MergeRequestServiceImpl implements MergeRequestService {
                             shouldRemoveSourceBranch,
                             mergeWhenPipelineSucceeds);
         } catch (GitLabApiException e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -84,7 +84,7 @@ public class MergeRequestServiceImpl implements MergeRequestService {
             return gitlab4jclient.getGitLabApi(userId)
                     .getMergeRequestApi().getCommits(projectId, mergeRequestId);
         } catch (GitLabApiException e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -94,7 +94,7 @@ public class MergeRequestServiceImpl implements MergeRequestService {
             gitlab4jclient.getGitLabApi()
                     .getMergeRequestApi().deleteMergeRequest(projectId, mergeRequestId);
         } catch (GitLabApiException e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 }

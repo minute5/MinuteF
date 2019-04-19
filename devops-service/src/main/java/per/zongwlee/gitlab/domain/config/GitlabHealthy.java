@@ -1,7 +1,7 @@
 package per.zongwlee.gitlab.domain.config;
 
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.core.exception.FeignException;
+import io.choerodon.core.exception.CommonException;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +39,7 @@ public class GitlabHealthy implements HealthIndicator {
             try {
                 gitLabApi.getApplicationApi().modifyApplicationSetting(true);
             } catch (GitLabApiException e) {
-                throw new FeignException(e);
+                throw new CommonException(e);
             }
             return Health.up().build();
         }

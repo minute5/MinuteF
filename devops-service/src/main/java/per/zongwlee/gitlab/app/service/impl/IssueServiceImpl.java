@@ -10,7 +10,7 @@ import org.gitlab4j.api.IssuesApi;
 import org.gitlab4j.api.models.Issue;
 import org.springframework.stereotype.Service;
 
-import io.choerodon.core.exception.FeignException;
+import io.choerodon.core.exception.CommonException;
 import per.zongwlee.gitlab.api.dto.IssueDto;
 import per.zongwlee.gitlab.app.service.IssueService;
 import per.zongwlee.gitlab.infra.common.client.Gitlab4jClient;
@@ -43,7 +43,7 @@ public class IssueServiceImpl implements IssueService {
                             issueDto.getDiscussionToResolveId());
 
         } catch (Exception e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -71,7 +71,7 @@ public class IssueServiceImpl implements IssueService {
                                 issueDto.getDiscussionToResolveId());
                 map.put(id, issue);
             } catch (GitLabApiException e) {
-                throw new FeignException(e.getMessage(), e);
+                throw new CommonException(e.getMessage(), e);
             }
         }
         return map;
@@ -96,7 +96,7 @@ public class IssueServiceImpl implements IssueService {
                             issueDto.getDueDate());
 
         } catch (Exception e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -118,7 +118,7 @@ public class IssueServiceImpl implements IssueService {
                         issueDto.getDueDate());
             }
         } catch (Exception e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -130,7 +130,7 @@ public class IssueServiceImpl implements IssueService {
                     .getIssuesApi()
                     .closeIssue(projectId, issueIid);
         } catch (Exception e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
 
         }
     }
@@ -144,7 +144,7 @@ public class IssueServiceImpl implements IssueService {
                         .getIssuesApi()
                         .closeIssue(projectId, issueId);
             } catch (Exception e) {
-                throw new FeignException(e.getMessage(), e);
+                throw new CommonException(e.getMessage(), e);
             }
         });
     }
@@ -157,7 +157,7 @@ public class IssueServiceImpl implements IssueService {
                     .getIssuesApi()
                     .openIssue(projectId, issueIid);
         } catch (Exception e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -170,7 +170,7 @@ public class IssueServiceImpl implements IssueService {
                         .getIssuesApi()
                         .openIssue(projectId, issueId);
             } catch (Exception e) {
-                throw new FeignException(e.getMessage(), e);
+                throw new CommonException(e.getMessage(), e);
             }
         });
     }
@@ -183,7 +183,7 @@ public class IssueServiceImpl implements IssueService {
                     .getIssuesApi()
                     .deleteIssue(projectId, issueIid);
         } catch (Exception e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -195,7 +195,7 @@ public class IssueServiceImpl implements IssueService {
                 gitLabApi.getIssuesApi().deleteIssue(projectId, issue);
             }
         } catch (Exception e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -212,7 +212,7 @@ public class IssueServiceImpl implements IssueService {
                 return nonPaged ? issuesApi.getIssues(projectId) : issuesApi.getIssues(projectId, page, pageSize);
             }
         } catch (Exception e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
 
         }
     }
@@ -225,7 +225,7 @@ public class IssueServiceImpl implements IssueService {
                     .getIssuesApi()
                     .getIssue(projectId, issueIid);
         } catch (Exception e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
 
         }
     }

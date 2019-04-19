@@ -11,6 +11,19 @@ databaseChangeLog(logicalFilePath: 'gitlab_repository.groovy') {
                 constraints(nullable: 'false')
             }
             column(name: 'gitlab_name', type: 'VARCHAR(255)', remarks: 'gitlab名称') {
+                constraints(unique: true, uniqueConstraintName: 'UK_GITLAB_REPOSITORY_GITLAB_NAME')
+                constraints(nullable: 'false')
+            }
+            column(name: 'gitlab_id', type: 'BIGINT UNSIGNED', remarks: 'gitlab用户id') {
+                constraints(unique: true, uniqueConstraintName: 'UK_GITLAB_REPOSITORY_GITLAB_ID')
+                constraints(nullable: 'false')
+            }
+            column(name: 'gitlab_group_id', type: 'BIGINT UNSIGNED', remarks: 'gitlab组id') {
+                constraints(unique: true, uniqueConstraintName: 'UK_GITLAB_REPOSITORY_GITLAB_GROUP_ID')
+                constraints(nullable: 'false')
+            }
+            column(name: 'gitlab_project_id', type: 'BIGINT UNSIGNED', remarks: 'gitlab项目id') {
+                constraints(unique: true, uniqueConstraintName: 'UK_GITLAB_REPOSITORY_GITLAB_PROJECT_ID')
                 constraints(nullable: 'false')
             }
             column(name: 'url', type: 'VARCHAR(2000)', remarks: '仓库地址')

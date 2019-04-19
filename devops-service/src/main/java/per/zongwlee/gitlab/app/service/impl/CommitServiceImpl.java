@@ -14,7 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.choerodon.core.exception.FeignException;
+import io.choerodon.core.exception.CommonException;
 import per.zongwlee.gitlab.api.dto.CommitStatuseDTO;
 import per.zongwlee.gitlab.app.service.CommitService;
 import per.zongwlee.gitlab.infra.common.client.Gitlab4jClient;
@@ -41,7 +41,7 @@ public class CommitServiceImpl implements CommitService {
             }
             return commitDTO;
         } catch (GitLabApiException e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -62,7 +62,7 @@ public class CommitServiceImpl implements CommitService {
             return commmitStatuseDTOS;
 
         } catch (GitLabApiException e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -73,13 +73,13 @@ public class CommitServiceImpl implements CommitService {
         try {
             sinceDate = simpleDateFormat.parse(since);
         } catch (ParseException e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
         try {
             return gitlab4jclient.getGitLabApi()
                     .getCommitsApi().getCommits(gitLabProjectId, ref, sinceDate, new Date(), null);
         } catch (GitLabApiException e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -88,7 +88,7 @@ public class CommitServiceImpl implements CommitService {
         try {
             return gitlab4jclient.getGitLabApi(userId).getCommitsApi().getCommits(gilabProjectId, page, size);
         } catch (GitLabApiException e) {
-            throw new FeignException(e);
+            throw new CommonException(e);
         }
     }
 }

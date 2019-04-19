@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import io.choerodon.core.exception.FeignException;
+import io.choerodon.core.exception.CommonException;
 import per.zongwlee.gitlab.api.dto.IssueDto;
 import per.zongwlee.gitlab.app.service.IssueService;
 
@@ -30,7 +30,7 @@ public class IssueController {
      * 创建issue
      *
      * @param issueDto issueDto对象
-     * @return Issue
+     * @return Branch
      */
     @ApiOperation(value = "创建issue")
     @PostMapping
@@ -39,7 +39,7 @@ public class IssueController {
             @RequestBody IssueDto issueDto) {
         return Optional.ofNullable(issueService.createIssue(issueDto))
                 .map(target -> new ResponseEntity<>(target, HttpStatus.CREATED))
-                .orElseThrow(() -> new FeignException("error.issue.add"));
+                .orElseThrow(() -> new CommonException("error.issue.add"));
     }
 
     /**
@@ -59,14 +59,14 @@ public class IssueController {
 
         return Optional.ofNullable(issueService.batchCreateIssue(issueDtos, userId))
                 .map(target -> new ResponseEntity<>(target, HttpStatus.CREATED))
-                .orElseThrow(() -> new FeignException("error.issue.add"));
+                .orElseThrow(() -> new CommonException("error.issue.add"));
     }
 
     /**
      * 更新issue
      *
      * @param issueDto issueDto对象
-     * @return Issue
+     * @return Branch
      */
     @ApiOperation(value = "更新issue")
     @PutMapping
@@ -76,7 +76,7 @@ public class IssueController {
 
         return Optional.ofNullable(issueService.updateIssue(issueDto))
                 .map(target -> new ResponseEntity<>(target, HttpStatus.CREATED))
-                .orElseThrow(() -> new FeignException("error.issue.update"));
+                .orElseThrow(() -> new CommonException("error.issue.update"));
     }
 
     /**
@@ -224,7 +224,7 @@ public class IssueController {
             @RequestParam Integer pageSize) {
         return Optional.ofNullable(issueService.listIssues(projectId, page, pageSize))
                 .map(target -> new ResponseEntity<>(target, HttpStatus.OK))
-                .orElseThrow(() -> new FeignException("error.issues.get"));
+                .orElseThrow(() -> new CommonException("error.issues.get"));
     }
 
     /**
@@ -232,7 +232,7 @@ public class IssueController {
      *
      * @param projectId 项目id
      * @param issueIid  issueIid
-     * @return Issue
+     * @return Branch
      */
     @ApiOperation(value = "根据issueIid查询单个issue")
     @GetMapping(value = "/project/{projectId}/{issueIid}")
@@ -244,7 +244,7 @@ public class IssueController {
 
         return Optional.ofNullable(issueService.getIssue(projectId, issueIid))
                 .map(target -> new ResponseEntity<>(target, HttpStatus.OK))
-                .orElseThrow(() -> new FeignException("error.gitlab_commit.get"));
+                .orElseThrow(() -> new CommonException("error.gitlab_commit.get"));
     }
 
 

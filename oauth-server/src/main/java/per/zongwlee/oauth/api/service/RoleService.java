@@ -6,7 +6,6 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import per.zongwlee.oauth.api.dto.AccessToken;
 import per.zongwlee.oauth.api.dto.ReturnRoleDTO;
 import per.zongwlee.oauth.api.dto.RoleDTO;
-import per.zongwlee.oauth.domain.entity.RoleE;
 
 /**
  * @author zongw.lee@gmail.com
@@ -15,7 +14,7 @@ import per.zongwlee.oauth.domain.entity.RoleE;
 public interface RoleService {
     AccessToken login(RoleDTO roleDTO);
 
-    String register(RoleDTO roleDTO);
+    ReturnRoleDTO register(RoleDTO roleDTO);
 
     ReturnRoleDTO updateSelective(RoleDTO roleDTO);
 

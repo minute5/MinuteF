@@ -7,9 +7,6 @@ databaseChangeLog(logicalFilePath: 'gitlab_commit.groovy') {
             column(name: 'id', type: 'BIGINT UNSIGNED', autoIncrement: true, remarks: 'ID,主键') {
                 constraints(primaryKey: true)
             }
-            column(name: 'commit_sha', type: 'BIGINT UNSIGNED', remarks: '提交秘钥') {
-                constraints(nullable: 'false')
-            }
             column(name: 'creator_id', type: 'BIGINT UNSIGNED', remarks: '提交者Id') {
                 constraints(nullable: 'false')
             }

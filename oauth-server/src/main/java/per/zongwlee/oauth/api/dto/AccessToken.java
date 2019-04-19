@@ -9,9 +9,28 @@ public class AccessToken {
     private String tokenType;
     private long expiresIn;
 
+    private Integer gitlabUserId;
+    private Long userId;
+
     public AccessToken(String accessToken, long expiresIn) {
         this.accessToken = accessToken;
         this.expiresIn = expiresIn;
+    }
+
+    public Integer getGitlabUserId() {
+        return gitlabUserId;
+    }
+
+    public void setGitlabUserId(Integer gitlabUserId) {
+        this.gitlabUserId = gitlabUserId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getAccess_token() {

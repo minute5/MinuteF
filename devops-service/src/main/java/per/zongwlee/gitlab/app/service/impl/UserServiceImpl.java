@@ -2,7 +2,7 @@ package per.zongwlee.gitlab.app.service.impl;
 
 import java.util.List;
 
-import io.choerodon.core.exception.FeignException;
+import io.choerodon.core.exception.CommonException;
 import per.zongwlee.gitlab.app.service.UserService;
 import per.zongwlee.gitlab.infra.common.client.Gitlab4jClient;
 import org.gitlab4j.api.Constants;
@@ -26,11 +26,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(User user, String password, Integer projectsLimit) {
         try {
+            //默认值
+            user.setCanCreateGroup(false);
+            user.setCanCreateProject(true);
+            user.setIsAdmin(false);
+            user.setSkipConfirmation(true);
+
             return gitlab4jclient.getGitLabApi()
                     .getUserApi()
                     .createUser(user, password, projectsLimit);
         } catch (GitLabApiException e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -42,7 +48,7 @@ public class UserServiceImpl implements UserService {
                     ? userApi.getActiveUsers(page, perPage)
                     : userApi.getUsers(page, perPage);
         } catch (GitLabApiException e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -51,7 +57,7 @@ public class UserServiceImpl implements UserService {
         try {
             return gitlab4jclient.getGitLabApi().getUserApi().getCurrentUser();
         } catch (GitLabApiException e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -61,7 +67,7 @@ public class UserServiceImpl implements UserService {
             return gitlab4jclient.getGitLabApi()
                     .getUserApi().getUser(userId);
         } catch (GitLabApiException e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -82,7 +88,7 @@ public class UserServiceImpl implements UserService {
             UserApi userApi = gitlab4jclient.getGitLabApi().getUserApi();
             userApi.deleteUser(userId);
         } catch (GitLabApiException e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -105,7 +111,7 @@ public class UserServiceImpl implements UserService {
             }
             return user;
         } catch (GitLabApiException e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -115,7 +121,7 @@ public class UserServiceImpl implements UserService {
         try {
             userApi.unblockUser(userId);
         } catch (GitLabApiException e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -125,7 +131,7 @@ public class UserServiceImpl implements UserService {
         try {
             userApi.blockUser(userId);
         } catch (GitLabApiException e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -135,14 +141,14 @@ public class UserServiceImpl implements UserService {
         try {
             User user = userApi.getUser(userId);
             if (user == null) {
-                throw new FeignException("error.users.get");
+                throw new CommonException("error.users.get");
             }
             return userApi.createImpersonationToken(
                     user.getId(),
                     "myToken",
                     ImpersonationToken.Scope.values());
         } catch (GitLabApiException e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 
@@ -152,11 +158,11 @@ public class UserServiceImpl implements UserService {
         try {
             User user = userApi.getUser(userId);
             if (user == null) {
-                throw new FeignException("error.users.get");
+                throw new CommonException("error.users.get");
             }
             return userApi.getImpersonationTokens(user.getId(), Constants.ImpersonationState.ACTIVE);
         } catch (GitLabApiException e) {
-            throw new FeignException(e.getMessage(), e);
+            throw new CommonException(e.getMessage(), e);
         }
     }
 }

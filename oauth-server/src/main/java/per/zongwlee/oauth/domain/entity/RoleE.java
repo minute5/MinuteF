@@ -23,9 +23,22 @@ public class RoleE extends AuditDomain {
     private Long id;
     private String name;
     private String email;
-    private Long mobile;
+    private String mobile;
     private Integer type;
     private String password;
+    private Integer gitlabId;
+
+    private Long objectVersionNumber;
+
+    @Override
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
+    }
+
+    @Override
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
 
     public Long getId() {
         return id;
@@ -33,6 +46,14 @@ public class RoleE extends AuditDomain {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getGitlabId() {
+        return gitlabId;
+    }
+
+    public void setGitlabId(Integer gitlabId) {
+        this.gitlabId = gitlabId;
     }
 
     public String getName() {
@@ -51,11 +72,11 @@ public class RoleE extends AuditDomain {
         this.email = email;
     }
 
-    public Long getMobile() {
+    public String getMobile() {
         return mobile;
     }
 
-    public void setMobile(Long mobile) {
+    public void setMobile(String mobile) {
         this.mobile = mobile;
     }
 

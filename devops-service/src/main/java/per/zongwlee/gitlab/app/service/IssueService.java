@@ -13,7 +13,7 @@ public interface IssueService {
      * 创建issue
      *
      * @param issueDto issueDto对象
-     * @return Issue
+     * @return Branch
      */
     Issue createIssue(IssueDto issueDto);
 
@@ -30,7 +30,7 @@ public interface IssueService {
      * 更新issue
      *
      * @param issueDto issueDto对象
-     * @return Issue
+     * @return Branch
      */
     Issue updateIssue(IssueDto issueDto);
 
@@ -107,7 +107,7 @@ public interface IssueService {
      *
      * @param projectId 项目id
      * @param issueIid  issueIid
-     * @return Issue
+     * @return Branch
      */
     Issue getIssue(Integer projectId, Integer issueIid);
 

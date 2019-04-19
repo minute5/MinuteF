@@ -8,13 +8,32 @@ import per.zongwlee.oauth.infra.enums.RoleType;
  */
 public class RoleDTO {
     private Long id;
+    private Integer gitlabId;
     private String name;
     private String email;
-    private Long mobile;
+    private String mobile;
     private Integer type;
     private String password;
     private Boolean isRememberMe;
     private String roleType;
+
+    private Long objectVersionNumber;
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public Integer getGitlabId() {
+        return gitlabId;
+    }
+
+    public void setGitlabId(Integer gitlabId) {
+        this.gitlabId = gitlabId;
+    }
 
     public String getRoleType() {
         return roleType;
@@ -56,11 +75,11 @@ public class RoleDTO {
         this.email = email;
     }
 
-    public Long getMobile() {
+    public String getMobile() {
         return mobile;
     }
 
-    public void setMobile(Long mobile) {
+    public void setMobile(String mobile) {
         this.mobile = mobile;
     }
 

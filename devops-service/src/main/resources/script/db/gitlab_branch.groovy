@@ -10,7 +10,13 @@ databaseChangeLog(logicalFilePath: 'gitlab_branch.groovy') {
             column(name: 'name', type: 'VARCHAR(255)', remarks: '名称') {
                 constraints(nullable: 'false')
             }
+            column(name: 'source_name', type: 'VARCHAR(255)', remarks: '源分支名称') {
+                constraints(nullable: 'true')
+            }
             column(name: 'creator_id', type: 'BIGINT UNSIGNED', remarks: '创建人Id') {
+                constraints(nullable: 'false')
+            }
+            column(name: 'project_id', type: 'BIGINT UNSIGNED', remarks: '关联项目Id') {
                 constraints(nullable: 'false')
             }
             column(name: 'issue_id', type: 'BIGINT UNSIGNED', remarks: '关联问题Id') {
@@ -27,8 +33,14 @@ databaseChangeLog(logicalFilePath: 'gitlab_branch.groovy') {
         createIndex(tableName: "gitlab_branch", indexName: "idx_gitlab_branch_creator_id") {
             column(name: "creator_id")
         }
+        createIndex(tableName: "gitlab_branch", indexName: "idx_gitlab_branch_name") {
+            column(name: "name")
+        }
         createIndex(tableName: "gitlab_branch", indexName: "idx_gitlab_branch_issue_id") {
             column(name: "issue_id")
+        }
+        createIndex(tableName: "gitlab_branch", indexName: "idx_gitlab_branch_project_id") {
+            column(name: "project_id")
         }
     }
 }

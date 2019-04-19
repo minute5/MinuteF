@@ -1,19 +1,18 @@
 package per.zongwlee.gitlab.app.service.impl;
 
-import java.util.List;
-
-import org.gitlab4j.api.GitLabApi;
+import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.exception.CommonException;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.gitlab4j.api.GitLabApiException;
-import org.gitlab4j.api.models.Branch;
-import org.gitlab4j.api.models.CompareResults;
-import org.gitlab4j.api.models.RepositoryFile;
 import org.gitlab4j.api.models.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import io.choerodon.core.exception.FeignException;
 import per.zongwlee.gitlab.app.service.RepositoryService;
+import per.zongwlee.gitlab.domain.entity.Branch;
 import per.zongwlee.gitlab.infra.common.client.Gitlab4jClient;
-import org.springframework.util.StringUtils;
+import per.zongwlee.gitlab.infra.mapper.BranchMapper;
+
+import java.util.List;
 
 
 @Service
@@ -25,19 +24,33 @@ public class RepositoryServiceImpl implements RepositoryService {
         this.gitlab4jclient = gitlab4jclient;
     }
 
+    @Autowired
+    BranchMapper branchMapper;
+
     @Override
-    public Branch createBranch(Integer projectId, String branchName, String source, Integer userId) {
+    public Branch createBranch(Integer projectId, String branchName, String source, Integer userId, Long issueId) {
+        Branch branch = new Branch();
+        branch.setName(branchName);
+        branch.setSourceName(source);
+        branch.setCreateorId(userId);
+        branch.setActive(0);
+        branch.setIssueId(issueId);
+        branch.setProjectId(projectId);
+        if (branchMapper.insert(branch) != 1) {
+            throw new CommonException("error.branch.insert");
+        }
         try {
-            return this.gitlab4jclient.getGitLabApi(userId).getRepositoryApi()
+            this.gitlab4jclient.getGitLabApi(userId).getRepositoryApi()
                     .createBranch(projectId, branchName, source);
         } catch (GitLabApiException e) {
             if (e.getMessage().equals("Branch already exists")) {
-                Branch branch = new Branch();
-                branch.setName("create branch message:Branch already exists");
-                return branch;
+                Branch branch2 = new Branch();
+                branch2.setName("create branch message:Branch already exists");
+                return branch2;
             }
-            throw new FeignException("error.branch.insert");
+            throw new CommonException("error.branch.insert");
         }
+        return branchMapper.selectOne(branch);
     }
 
     @Override
@@ -45,18 +58,18 @@ public class RepositoryServiceImpl implements RepositoryService {
         try {
             return gitlab4jclient.getGitLabApi(userId).getRepositoryApi().getTags(projectId);
         } catch (GitLabApiException e) {
-            throw new FeignException("error.tag.get");
+            throw new CommonException("error.tag.get");
         }
     }
 
     @Override
-    public List<Tag> listTagsByPage(Integer projectId, int page, int perPage, Integer userId) {
+    public List<Tag> listTagsByPage(Integer projectId, PageRequest pageRequest, Integer userId) {
         try {
             return gitlab4jclient.getGitLabApi(userId)
                     .getRepositoryApi()
-                    .getTags(projectId, page, perPage);
+                    .getTags(projectId, pageRequest.getPage(), pageRequest.getSize());
         } catch (GitLabApiException e) {
-            throw new FeignException("error.tag.getPage");
+            throw new CommonException("error.tag.getPage");
         }
     }
 
@@ -67,7 +80,7 @@ public class RepositoryServiceImpl implements RepositoryService {
                     .getRepositoryApi()
                     .createTag(projectId, tagName, ref, msg, releaseNotes);
         } catch (GitLabApiException e) {
-            throw new FeignException("error.tag.create: " + e.getMessage(), e);
+            throw new CommonException("error.tag.create: " + e.getMessage(), e);
         }
     }
 
@@ -79,7 +92,7 @@ public class RepositoryServiceImpl implements RepositoryService {
                     .getRepositoryApi()
                     .deleteTag(projectId, tagName);
         } catch (GitLabApiException e) {
-            throw new FeignException("error.tag.delete: " + e.getMessage(), e);
+            throw new CommonException("error.tag.delete: " + e.getMessage(), e);
         }
     }
 
@@ -90,107 +103,64 @@ public class RepositoryServiceImpl implements RepositoryService {
                     .getRepositoryApi()
                     .updateTagRelease(projectId, name, releaseNotes);
         } catch (GitLabApiException e) {
-            throw new FeignException("error.tag.update: " + e.getMessage(), e);
+            throw new CommonException("error.tag.update: " + e.getMessage(), e);
         }
     }
 
     @Override
     public void deleteBranch(Integer projectId, String branchName, Integer userId) {
+        Branch branch = new Branch();
+        branch.setName(branchName);
+        branch.setProjectId(projectId);
+
+        Branch subBranch = new Branch();
+        subBranch.setSourceName(branchName);
+        subBranch.setProjectId(projectId);
+
+        if (!branchMapper.select(subBranch).isEmpty()) {
+            throw new CommonException("error.branch.has.sub.branch");
+        }
+        if (branchMapper.delete(branch) != 1) {
+            throw new CommonException("error.branch.delete");
+        }
+
         try {
             gitlab4jclient
                     .getGitLabApi(userId)
                     .getRepositoryApi()
                     .deleteBranch(projectId, branchName);
         } catch (GitLabApiException e) {
-            throw new FeignException("error.branch.delete");
+            throw new CommonException("error.branch.delete");
         }
     }
 
     @Override
     public Branch queryBranchByName(Integer projectId, String branchName) {
-        try {
-            return gitlab4jclient.getGitLabApi()
-                    .getRepositoryApi()
-                    .getBranch(projectId, branchName);
-        } catch (GitLabApiException e) {
-            return new Branch();
-        }
+        //        try {
+//            return gitlab4jclient.getGitLabApi()
+//                    .getRepositoryApi()
+//                    .getBranch(projectId, branchName);
+//        } catch (GitLabApiException e) {
+//            return new Branch();
+//        }
+        Branch branch = new Branch();
+        branch.setName(branchName);
+        branch.setProjectId(projectId);
+        return branchMapper.selectOne(branch);
     }
 
     @Override
     public List<Branch> listBranches(Integer projectId, Integer userId) {
-        try {
-            return gitlab4jclient.getGitLabApi(userId)
-                    .getRepositoryApi()
-                    .getBranches(projectId);
-        } catch (GitLabApiException e) {
-            throw new FeignException("error.branch.get");
-        }
-    }
-
-    @Override
-    public RepositoryFile getFile(Integer projectId, String commit, String filePath) {
-        GitLabApi gitLabApi = gitlab4jclient.getGitLabApi();
-        RepositoryFile file;
-        try {
-            file = gitLabApi.getRepositoryFileApi().getFile(filePath, projectId, commit);
-        } catch (GitLabApiException e) {
-            return null;
-        }
-        return file;
-    }
-
-    @Override
-    public CompareResults getDiffs(Integer projectId, String from, String to) {
-        GitLabApi gitLabApi = gitlab4jclient.getGitLabApi();
-        try {
-            return gitLabApi.getRepositoryApi().compare(projectId, from, to);
-        } catch (GitLabApiException e) {
-            throw new FeignException(e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public RepositoryFile createFile(Integer projectId, String path, String content, String commitMessage, Integer userId, String branchName) {
-        GitLabApi gitLabApi = gitlab4jclient.getGitLabApi(userId);
-        RepositoryFile repositoryFile = new RepositoryFile();
-        try {
-            repositoryFile.setContent(content);
-            repositoryFile.setFilePath(path);
-            repositoryFile = gitLabApi.getRepositoryFileApi().createFile(
-                    repositoryFile, projectId, StringUtils.isEmpty(branchName) ? "master" : branchName, "ADD FILE");
-        } catch (GitLabApiException e) {
-            return null;
-        }
-        return repositoryFile;
-    }
-
-    @Override
-    public RepositoryFile updateFile(Integer projectId, String path, String content, String commitMessage, Integer userId) {
-        GitLabApi gitLabApi = gitlab4jclient.getGitLabApi(userId);
-        RepositoryFile repositoryFile = new RepositoryFile();
-        try {
-            repositoryFile.setContent(content);
-            repositoryFile.setFilePath(path);
-            repositoryFile = gitLabApi.getRepositoryFileApi().updateFile(repositoryFile, projectId, "master", commitMessage);
-        } catch (GitLabApiException e) {
-            if (e.getHttpStatus() == 200) {
-                return repositoryFile;
-            } else {
-                return null;
-            }
-        }
-        return repositoryFile;
-    }
-
-    @Override
-    public void deleteFile(Integer projectId, String path, String commitMessage, Integer userId) {
-        GitLabApi gitLabApi = gitlab4jclient.getGitLabApi(userId);
-        try {
-            gitLabApi.getRepositoryFileApi().deleteFile(path, projectId, "master", "DELETE FILE");
-        } catch (GitLabApiException e) {
-            throw new FeignException(e.getMessage(), e);
-        }
+//        try {
+//            return gitlab4jclient.getGitLabApi(userId)
+//                    .getRepositoryApi()
+//                    .getBranches(projectId);
+//        } catch (GitLabApiException e) {
+//            throw new CommonException("error.branch.get");
+//        }
+        Branch branch = new Branch();
+        branch.setProjectId(projectId);
+        return branchMapper.select(branch);
     }
 
 }

@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import io.choerodon.core.exception.FeignException;
+import io.choerodon.core.exception.CommonException;
 import per.zongwlee.gitlab.app.service.UserService;
 
 
@@ -35,7 +35,7 @@ public class UserController {
     public ResponseEntity<User> queryCurrentUser() {
         return Optional.ofNullable(userService.queryCurrentUser())
                 .map(target -> new ResponseEntity<>(target, HttpStatus.OK))
-                .orElseThrow(() -> new FeignException("error.user.get"));
+                .orElseThrow(() -> new CommonException("error.user.get"));
     }
 
     /**
@@ -50,14 +50,14 @@ public class UserController {
     @PostMapping
     public ResponseEntity<User> create(
             @ApiParam(value = "密码", required = true)
-            @RequestParam String password,
+            @RequestParam(value = "password") String password,
             @ApiParam(value = "创建项目上限")
-            @RequestParam(required = false) Integer projectsLimit,
+            @RequestParam(required = false, value = "projects_limit") Integer projectsLimit,
             @ApiParam(value = "用户信息")
             @RequestBody User user) {
         return Optional.ofNullable(userService.createUser(user, password, projectsLimit))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
-                .orElseThrow(() -> new FeignException("error.users.create"));
+                .orElseThrow(() -> new CommonException("error.users.create"));
     }
 
     /**
@@ -79,7 +79,7 @@ public class UserController {
             @RequestParam(defaultValue = "true") Boolean active) {
         return Optional.ofNullable(userService.listUser(perPage, page, active))
                 .map(target -> new ResponseEntity<>(target, HttpStatus.OK))
-                .orElseThrow(() -> new FeignException("error.users.queryAll"));
+                .orElseThrow(() -> new CommonException("error.users.queryAll"));
     }
 
     /**
@@ -95,16 +95,16 @@ public class UserController {
             @PathVariable Integer userId) {
         return Optional.ofNullable(userService.queryUserByUserId(userId))
                 .map(target -> new ResponseEntity<>(target, HttpStatus.OK))
-                .orElseThrow(() -> new FeignException("error.users.get"));
+                .orElseThrow(() -> new CommonException("error.users.get"));
     }
 
     /**
-     * 根据用户Id获得用户信息
+     * 根据用户名称获得用户信息
      *
-     * @param username 用户Id
+     * @param username 用户名称
      * @return User
      */
-    @ApiOperation(value = "根据用户Id获得用户信息")
+    @ApiOperation(value = "根据用户名称获得用户信息")
     @GetMapping(value = "/{username}/details")
     public ResponseEntity<User> queryUserByUsername(
             @ApiParam(value = "用户Id", required = true)
@@ -112,6 +112,22 @@ public class UserController {
         return Optional.ofNullable(userService.queryUserByUsername(username))
                 .map(target -> new ResponseEntity<>(target, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(new User(), HttpStatus.NO_CONTENT));
+    }
+
+    /**
+     * 根据用户名称获得用户信息
+     *
+     * @param username 用户名称
+     * @return User
+     */
+    @ApiOperation(value = "根据用户名称获得用户Id")
+    @GetMapping(value = "/{username}/id")
+    public ResponseEntity<Integer> queryUserIdByUsername(
+            @ApiParam(value = "用户名称", required = true)
+            @PathVariable String username) {
+        return Optional.ofNullable(userService.queryUserByUsername(username).getId())
+                .map(target -> new ResponseEntity<>(target, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.user.username.get"));
     }
 
     /**
@@ -146,7 +162,7 @@ public class UserController {
             @RequestBody User user) {
         return Optional.ofNullable(userService.updateUserByUserId(userId, user, projectsLimit))
                 .map(target -> new ResponseEntity<>(target, HttpStatus.CREATED))
-                .orElseThrow(() -> new FeignException("error.users.username.update"));
+                .orElseThrow(() -> new CommonException("error.users.username.update"));
     }
 
     /**
@@ -188,7 +204,7 @@ public class UserController {
     public ResponseEntity<ImpersonationToken> createUserAccessToken(@PathVariable Integer userId) {
         return Optional.ofNullable(userService.createUserAccessToken(userId))
                 .map(target -> new ResponseEntity<>(target, HttpStatus.OK))
-                .orElseThrow(() -> new FeignException("error.access_token.get"));
+                .orElseThrow(() -> new CommonException("error.access_token.get"));
     }
 
     /**
@@ -202,6 +218,6 @@ public class UserController {
     public ResponseEntity<List<ImpersonationToken>> listUserAccessToken(@PathVariable Integer userId) {
         return Optional.ofNullable(userService.listUserAccessToken(userId))
                 .map(target -> new ResponseEntity<>(target, HttpStatus.OK))
-                .orElseThrow(() -> new FeignException("error.access_token.get"));
+                .orElseThrow(() -> new CommonException("error.access_token.get"));
     }
 }

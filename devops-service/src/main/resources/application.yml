@@ -1,11 +1,16 @@
+#spring:
+#  sleuth:
+#    integration:
+#      enabled: false
+#    scheduled:
+#      enabled: false
+#    sampler:
+#      percentage: 1.0
 spring:
-  sleuth:
-    integration:
-      enabled: false
-    scheduled:
-      enabled: false
-    sampler:
-      percentage: 1.0
+  datasource:
+    url: jdbc:mysql://106.14.187.2:3306/devops-service?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: 7414
 gitlab:
   url: "http://127.0.0.1:10080"
   privateToken: "Dm3dPtVKPGhm28Z-yuy_"

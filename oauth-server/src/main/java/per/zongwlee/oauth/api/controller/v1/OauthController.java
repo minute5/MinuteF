@@ -35,7 +35,7 @@ public class OauthController {
     }
 
     @PostMapping(value = "/register")
-    public ResponseEntity<String> register(@RequestBody RoleDTO roleDTO) {
+    public ResponseEntity<ReturnRoleDTO> register(@RequestBody RoleDTO roleDTO) {
         return Optional.ofNullable(roleService.register(roleDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.user.register"));
