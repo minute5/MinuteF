@@ -19,8 +19,6 @@ import java.util.Optional;
 @RequestMapping(value = "/v1/projects")
 public class ProjectsController {
 
-    private static final String GROUPNAME = "minuteF";
-
     private ProjectService projectService;
 
     public ProjectsController(ProjectService projectService) {
@@ -37,13 +35,10 @@ public class ProjectsController {
     @ApiOperation(value = "通过项目名称创建项目")
     @PostMapping
     public ResponseEntity<Repository> create(
-            @ApiParam(value = "项目名称", required = true)
-            @RequestParam("project_name") String projectName,
-            @ApiParam(value = "gitlab项目名称", required = true)
-            @RequestParam("gitlab_project_name") String gitlabProjectName,
             @ApiParam(value = "用户Id")
-            @RequestParam(required = false, value = ("user_id")) Integer userId) {
-        return Optional.ofNullable(projectService.createProject(projectName, gitlabProjectName, userId))
+            @RequestParam(required = false, value = ("user_id")) Integer userId,
+            @RequestBody Repository repository ) {
+        return Optional.ofNullable(projectService.createProject(repository.get, gitlabProjectName, userId))
                 .map(target -> new ResponseEntity<>(target, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.projects.create.name"));
     }

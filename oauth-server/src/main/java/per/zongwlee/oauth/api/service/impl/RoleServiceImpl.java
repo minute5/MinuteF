@@ -1,6 +1,5 @@
 package per.zongwlee.oauth.api.service.impl;
 
-import io.choerodon.core.convertor.ConvertPageHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
@@ -17,6 +16,7 @@ import per.zongwlee.oauth.api.dto.RoleDTO;
 import per.zongwlee.oauth.api.service.RoleService;
 import per.zongwlee.oauth.api.validator.UserValidator;
 import per.zongwlee.oauth.domain.entity.RoleE;
+import per.zongwlee.oauth.infra.common.util.ConvertUtil;
 import per.zongwlee.oauth.infra.common.util.JwtTokenUtils;
 import per.zongwlee.oauth.infra.feign.DevopsFeignClient;
 import per.zongwlee.oauth.infra.mapper.RoleMapper;
@@ -128,7 +128,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Page<ReturnRoleDTO> pageQuery(PageRequest pageRequest) {
-        Page<ReturnRoleDTO> roleEPage = ConvertPageHelper.convertPage(PageHelper.doPageAndSort(
+        Page<ReturnRoleDTO> roleEPage = ConvertUtil.convertPage(PageHelper.doPageAndSort(
                 pageRequest, () -> roleMapper.selectAll()), ReturnRoleDTO.class);
         roleEPage.getContent().forEach(ReturnRoleDTO::loadRoleType);
         return roleEPage;
