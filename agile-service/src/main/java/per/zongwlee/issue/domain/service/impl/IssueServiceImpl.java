@@ -76,7 +76,7 @@ public class IssueServiceImpl extends BaseServiceImpl<Issue> implements IssueSer
     @Override
     public IssueDTO queryById(Long id) {
         IssueDTO res = modelMapper.convert(issueMapper.selectByPrimaryKey(id), IssueDTO.class);
-        res.setHandler(userFeignClient.queryById(res.getHandlerId()).getBody());
+        Optional.ofNullable(res.getHandlerId()).ifPresent(v -> res.setHandler(userFeignClient.queryById(v).getBody()));
         res.setReporter(userFeignClient.queryById(res.getReporterId()).getBody());
         res.setPriority(modelMapper.convert(priorityService.selectByPrimaryKey(res.getPriorityId()), PriorityDTO.class));
         return res;

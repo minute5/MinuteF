@@ -52,11 +52,10 @@ public class ProjectServiceImpl implements ProjectService {
         try {
             Project project = new Project();
             project.setDefaultBranch("master");
-            project.setName(projectName);
-            project.setPath(projectName);
+            project.setName(gitlabProjectName);
+            project.setPath(gitlabProjectName);
             project.setPublic(true);
-            project.setVisibility(Visibility.PUBLIC);
-            project.setWikiEnabled(false);
+//            project.setVisibility(Visibility.PUBLIC);
 
             //group
             Namespace namespace = new Namespace();
@@ -64,9 +63,9 @@ public class ProjectServiceImpl implements ProjectService {
             namespace.setFullPath(group.getFullPath());
             namespace.setPath(group.getPath());
             namespace.setName(group.getName());
-            project.setNamespace(namespace);
+//            project.setNamespace(namespace);
 
-            gitLabApi.getProjectApi().createProject(project);
+            Project res = gitLabApi.getProjectApi().createProject(project);
 
 //            Project project = gitLabApi.getProjectApi().createProject(group.getId(), gitlabProjectName);
 //            project.setPublic(true);
@@ -77,7 +76,7 @@ public class ProjectServiceImpl implements ProjectService {
             repository.setName(projectName);
             repository.setGitlabName(gitlabProjectName);
             repository.setGitlabId(1);
-            repository.setGitlabProjectId(project.getId());
+            repository.setGitlabProjectId(res.getId());
             repository.setGitlabGroupId(group.getId());
             String url = gitlabUrl + "/" + GROUPNAME + "/" + gitlabProjectName + ".git";
             repository.setUrl(url);
