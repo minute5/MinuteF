@@ -31,6 +31,8 @@ public class UserServiceImpl implements UserService {
             user.setCanCreateProject(true);
             user.setIsAdmin(false);
             user.setSkipConfirmation(true);
+            user.setExternal(false);
+            user.setSkipReconfirmation(true);
 
             return gitlab4jclient.getGitLabApi()
                     .getUserApi()

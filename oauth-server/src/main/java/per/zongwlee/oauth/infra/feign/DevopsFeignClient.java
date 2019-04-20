@@ -12,7 +12,7 @@ import per.zongwlee.oauth.infra.feign.fallback.DevopsFeignClientFallback;
  * @author zongw.lee@gmail.com
  * @since 2019/04/16
  */
-@FeignClient(value = "devops-gitlab-service", path = "/devops",
+@FeignClient(value = "devops-gitlab-service",
         fallback = DevopsFeignClientFallback.class)
 @Component
 public interface DevopsFeignClient {

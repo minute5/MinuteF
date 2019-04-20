@@ -74,9 +74,9 @@ public class RoleServiceImpl implements RoleService {
         //gitlab创建用户
         User user = new User();
         user.setName(roleDTO.getName());
-        user.setUsername(roleDTO.getName());
+        user.setUsername(roleDTO.getName() + "-gitlab");
         user.setEmail(roleDTO.getEmail());
-        Integer gitlabId = devopsFeignClient.create(roleDTO.getPassword(), null, user).getBody().getId();
+        Integer gitlabId = devopsFeignClient.create(roleDTO.getPassword(), 1, user).getBody().getId();
 
         if (roleDTO.getName() == null) {
             throw new CommonException(USERNAMECANNOTBENULL);
@@ -94,7 +94,7 @@ public class RoleServiceImpl implements RoleService {
         if (roleMapper.insert(roleE) != 1) {
             throw new CommonException("error.user.insert");
         }
-        return modelMapper.map(roleMapper.selectOne(roleE),ReturnRoleDTO.class);
+        return modelMapper.map(roleMapper.selectOne(roleE), ReturnRoleDTO.class);
     }
 
     @Override
@@ -137,6 +137,16 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public boolean checkAuthorazition(String jwtToken) {
         return !JwtTokenUtils.isExpiration(jwtToken);
+    }
+
+    @Override
+    public ReturnRoleDTO getUserByAuthorazition(String jwtToken) {
+        if (JwtTokenUtils.isExpiration(jwtToken)) {
+            throw new CommonException("error.user.token.has.expired");
+        }
+        RoleE roleE = new RoleE();
+        roleE.setName(JwtTokenUtils.getUsername(jwtToken));
+        return modelMapper.map(roleMapper.selectOne(roleE), ReturnRoleDTO.class);
     }
 
 }

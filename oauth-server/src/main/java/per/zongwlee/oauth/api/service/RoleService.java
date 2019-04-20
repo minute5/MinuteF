@@ -25,4 +25,6 @@ public interface RoleService {
     Page<ReturnRoleDTO> pageQuery(PageRequest pageRequest);
 
     boolean checkAuthorazition(String jwtToken);
+
+    ReturnRoleDTO getUserByAuthorazition(String jwtToken);
 }

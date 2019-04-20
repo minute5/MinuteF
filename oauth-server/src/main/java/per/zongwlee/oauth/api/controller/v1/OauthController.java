@@ -13,6 +13,7 @@ import per.zongwlee.oauth.api.dto.ReturnRoleDTO;
 import per.zongwlee.oauth.api.dto.RoleDTO;
 import per.zongwlee.oauth.api.service.RoleService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 
@@ -44,6 +45,13 @@ public class OauthController {
     @GetMapping(value = "/check/authorazition")
     public Boolean checkAuthorazition(@RequestParam("jwtToken") String jwtToken) {
         return roleService.checkAuthorazition(jwtToken);
+    }
+
+    @GetMapping(value = "/user/detail")
+    public ResponseEntity<ReturnRoleDTO> getUserByAuthorazition(HttpServletRequest request) {
+        return Optional.ofNullable(roleService.getUserByAuthorazition(request.getHeader("Jwt_Token")))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.user.get.detail"));
     }
 
     @GetMapping(value = "/{role_id}")
