@@ -2,8 +2,6 @@ package per.zongwlee.gitlab.app.service.impl;
 
 import com.google.gson.Gson;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.core.exception.CommonException;
-import io.swagger.models.auth.In;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.*;
@@ -12,8 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import per.zongwlee.gitlab.api.dto.MemberDto;
 import per.zongwlee.gitlab.app.service.GroupService;
 import per.zongwlee.gitlab.app.service.ProjectService;
 import per.zongwlee.gitlab.domain.entity.Repository;
@@ -21,7 +17,7 @@ import per.zongwlee.gitlab.infra.common.client.Gitlab4jClient;
 import per.zongwlee.gitlab.infra.mapper.RepositoryMapper;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -54,10 +50,28 @@ public class ProjectServiceImpl implements ProjectService {
             throw new CommonException("error.project.can.not.be.more");
         }
         try {
-            Project project = gitLabApi.getProjectApi().createProject(group.getId(), gitlabProjectName);
-            project.setVisibility(Visibility.PUBLIC);
+            Project project = new Project();
+            project.setDefaultBranch("master");
+            project.setName(projectName);
+            project.setPath(projectName);
             project.setPublic(true);
-            gitLabApi.getProjectApi().updateProject(project);
+            project.setVisibility(Visibility.PUBLIC);
+            project.setWikiEnabled(false);
+
+            //group
+            Namespace namespace = new Namespace();
+            namespace.setId(group.getId());
+            namespace.setFullPath(group.getFullPath());
+            namespace.setPath(group.getPath());
+            namespace.setName(group.getName());
+            project.setNamespace(namespace);
+
+            gitLabApi.getProjectApi().createProject(project);
+
+//            Project project = gitLabApi.getProjectApi().createProject(group.getId(), gitlabProjectName);
+//            project.setPublic(true);
+//            project.setDefaultBranch("master");
+//            gitLabApi.getProjectApi().updateProject(project);
 
             Repository repository = new Repository();
             repository.setName(projectName);
@@ -65,7 +79,7 @@ public class ProjectServiceImpl implements ProjectService {
             repository.setGitlabId(1);
             repository.setGitlabProjectId(project.getId());
             repository.setGitlabGroupId(group.getId());
-            String url = gitlabUrl + "/" + GROUPNAME + "/" + gitlabProjectName;
+            String url = gitlabUrl + "/" + GROUPNAME + "/" + gitlabProjectName + ".git";
             repository.setUrl(url);
 
             if (repositoryMapper.insert(repository) != 1) {
@@ -87,6 +101,9 @@ public class ProjectServiceImpl implements ProjectService {
         } catch (GitLabApiException e) {
             throw new CommonException(e.getMessage(), e);
         }
+        Repository repository = new Repository();
+        repository.setGitlabProjectId(projectId);
+        repositoryMapper.delete(repository);
     }
 
     @Override
@@ -139,16 +156,19 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Repository updateProject(Repository newRepository, Integer userId) {
-        try {
-            if (repositoryMapper.updateByPrimaryKeySelective(newRepository) != 1) {
-                throw new CommonException("error.update.Repository");
+        Optional.ofNullable(newRepository.getGitlabName()).ifPresent(v -> {
+            try {
+                Project project = gitlab4jclient.getGitLabApi().getProjectApi().getProject(newRepository.getGitlabId());
+                project.setName(newRepository.getName());
+                gitlab4jclient.getGitLabApi(userId).getProjectApi().updateProject(project);
+            } catch (GitLabApiException e) {
+                throw new CommonException(e.getMessage(), e);
             }
-            Project project = gitlab4jclient.getGitLabApi().getProjectApi().getProject(newRepository.getGitlabId());
-            gitlab4jclient.getGitLabApi(userId).getProjectApi().updateProject(project);
-            return repositoryMapper.selectByPrimaryKey(newRepository);
-        } catch (GitLabApiException e) {
-            throw new CommonException(e.getMessage(), e);
+        });
+        if (repositoryMapper.updateByPrimaryKeySelective(newRepository) != 1) {
+            throw new CommonException("error.repository.update");
         }
+        return repositoryMapper.selectByPrimaryKey(newRepository.getId());
     }
 
     @Override

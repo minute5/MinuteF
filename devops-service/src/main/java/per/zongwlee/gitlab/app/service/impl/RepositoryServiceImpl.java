@@ -1,7 +1,6 @@
 package per.zongwlee.gitlab.app.service.impl;
 
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.Tag;
@@ -29,16 +28,6 @@ public class RepositoryServiceImpl implements RepositoryService {
 
     @Override
     public Branch createBranch(Integer projectId, String branchName, String source, Integer userId, Long issueId) {
-        Branch branch = new Branch();
-        branch.setName(branchName);
-        branch.setSourceName(source);
-        branch.setCreateorId(userId);
-        branch.setActive(0);
-        branch.setIssueId(issueId);
-        branch.setProjectId(projectId);
-        if (branchMapper.insert(branch) != 1) {
-            throw new CommonException("error.branch.insert");
-        }
         try {
             this.gitlab4jclient.getGitLabApi(userId).getRepositoryApi()
                     .createBranch(projectId, branchName, source);
@@ -48,6 +37,16 @@ public class RepositoryServiceImpl implements RepositoryService {
                 branch2.setName("create branch message:Branch already exists");
                 return branch2;
             }
+            throw new CommonException(e.getMessage(), e);
+        }
+        Branch branch = new Branch();
+        branch.setName(branchName);
+        branch.setSourceName(source);
+        branch.setCreateorId(userId);
+        branch.setActive(0);
+        branch.setIssueId(issueId);
+        branch.setProjectId(projectId);
+        if (branchMapper.insert(branch) != 1) {
             throw new CommonException("error.branch.insert");
         }
         return branchMapper.selectOne(branch);

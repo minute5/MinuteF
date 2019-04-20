@@ -84,7 +84,7 @@ public class IssueServiceImpl extends BaseServiceImpl<Issue> implements IssueSer
 
     private Page<IssueDTO> loadIssueDTOPage(Page<IssueDTO> page) {
         page.getContent().forEach(v -> {
-            v.setHandler(userFeignClient.queryById(v.getHandlerId()).getBody());
+            Optional.ofNullable(v.getHandlerId()).ifPresent(id -> v.setHandler(userFeignClient.queryById(id).getBody()));
             v.setReporter(userFeignClient.queryById(v.getReporterId()).getBody());
             v.setPriority(modelMapper.convert(priorityService.selectByPrimaryKey(v.getPriorityId()), PriorityDTO.class));
         });

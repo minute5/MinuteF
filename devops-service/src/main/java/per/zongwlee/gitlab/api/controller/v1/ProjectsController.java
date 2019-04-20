@@ -1,7 +1,6 @@
 package per.zongwlee.gitlab.api.controller.v1;
 
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.core.exception.CommonException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.gitlab4j.api.models.Member;
@@ -37,8 +36,9 @@ public class ProjectsController {
     public ResponseEntity<Repository> create(
             @ApiParam(value = "用户Id")
             @RequestParam(required = false, value = ("user_id")) Integer userId,
-            @RequestBody Repository repository ) {
-        return Optional.ofNullable(projectService.createProject(repository.get, gitlabProjectName, userId))
+            @RequestParam(value = "project_name") String projectName,
+            @RequestParam(value = "gitlab_project_name") String gitlabProjectName) {
+        return Optional.ofNullable(projectService.createProject(projectName, gitlabProjectName, userId))
                 .map(target -> new ResponseEntity<>(target, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.projects.create.name"));
     }
@@ -90,7 +90,7 @@ public class ProjectsController {
             @ApiParam(value = "用户Id", required = true)
             @RequestParam(value = "user_id") Integer userId,
             @ApiParam(value = "项目信息", required = true)
-            @PathVariable Repository repository) {
+            @RequestBody Repository repository) {
         return Optional.ofNullable(projectService.updateProject(repository, userId))
                 .map(target -> new ResponseEntity<>(target, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.projects.update"));
