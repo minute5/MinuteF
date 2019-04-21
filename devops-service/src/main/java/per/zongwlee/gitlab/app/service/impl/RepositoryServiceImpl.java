@@ -42,7 +42,7 @@ public class RepositoryServiceImpl implements RepositoryService {
         Branch branch = new Branch();
         branch.setName(branchName);
         branch.setSourceName(source);
-        branch.setCreateorId(userId);
+        branch.setCreatorId(userId);
         branch.setActive(0);
         branch.setIssueId(issueId);
         branch.setProjectId(projectId);
@@ -119,16 +119,16 @@ public class RepositoryServiceImpl implements RepositoryService {
         if (!branchMapper.select(subBranch).isEmpty()) {
             throw new CommonException("error.branch.has.sub.branch");
         }
-        if (branchMapper.delete(branch) != 1) {
-            throw new CommonException("error.branch.delete");
-        }
-
         try {
             gitlab4jclient
                     .getGitLabApi(userId)
                     .getRepositoryApi()
                     .deleteBranch(projectId, branchName);
         } catch (GitLabApiException e) {
+            throw new CommonException("error.branch.delete");
+        }
+        
+        if (branchMapper.delete(branch) != 1) {
             throw new CommonException("error.branch.delete");
         }
     }

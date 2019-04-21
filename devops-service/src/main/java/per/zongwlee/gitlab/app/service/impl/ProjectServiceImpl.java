@@ -4,7 +4,10 @@ import com.google.gson.Gson;
 import io.choerodon.core.exception.CommonException;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
-import org.gitlab4j.api.models.*;
+import org.gitlab4j.api.models.AccessLevel;
+import org.gitlab4j.api.models.Group;
+import org.gitlab4j.api.models.Member;
+import org.gitlab4j.api.models.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,33 +53,17 @@ public class ProjectServiceImpl implements ProjectService {
             throw new CommonException("error.project.can.not.be.more");
         }
         try {
-            Project project = new Project();
-            project.setDefaultBranch("master");
-            project.setName(gitlabProjectName);
-            project.setPath(gitlabProjectName);
+            Project project = gitLabApi.getProjectApi().createProject(group.getId(), gitlabProjectName);
             project.setPublic(true);
 //            project.setVisibility(Visibility.PUBLIC);
-
-            //group
-            Namespace namespace = new Namespace();
-            namespace.setId(group.getId());
-            namespace.setFullPath(group.getFullPath());
-            namespace.setPath(group.getPath());
-            namespace.setName(group.getName());
-//            project.setNamespace(namespace);
-
-            Project res = gitLabApi.getProjectApi().createProject(project);
-
-//            Project project = gitLabApi.getProjectApi().createProject(group.getId(), gitlabProjectName);
-//            project.setPublic(true);
-//            project.setDefaultBranch("master");
-//            gitLabApi.getProjectApi().updateProject(project);
+//            gitLabApi;
+            gitLabApi.getProjectApi().updateProject(project);
 
             Repository repository = new Repository();
             repository.setName(projectName);
             repository.setGitlabName(gitlabProjectName);
-            repository.setGitlabId(1);
-            repository.setGitlabProjectId(res.getId());
+            repository.setGitlabId(userId);
+            repository.setGitlabProjectId(project.getId());
             repository.setGitlabGroupId(group.getId());
             String url = gitlabUrl + "/" + GROUPNAME + "/" + gitlabProjectName + ".git";
             repository.setUrl(url);

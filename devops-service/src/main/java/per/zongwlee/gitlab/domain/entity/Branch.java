@@ -7,7 +7,6 @@ import io.choerodon.mybatis.domain.AuditDomain;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.Date;
 
 /**
  * @author zongw.lee@gmail.com
@@ -24,7 +23,7 @@ public class Branch extends AuditDomain {
 
     private String name;
     private String sourceName;
-    private Integer createorId;
+    private Integer creatorId;
     private Long issueId;
     private int active;
     private Integer projectId;
@@ -73,12 +72,12 @@ public class Branch extends AuditDomain {
         this.name = name;
     }
 
-    public Integer getCreateorId() {
-        return createorId;
+    public Integer getCreatorId() {
+        return creatorId;
     }
 
-    public void setCreateorId(Integer createorId) {
-        this.createorId = createorId;
+    public void setCreatorId(Integer creatorId) {
+        this.creatorId = creatorId;
     }
 
     public Long getIssueId() {
