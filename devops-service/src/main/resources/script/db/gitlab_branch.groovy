@@ -36,9 +36,6 @@ databaseChangeLog(logicalFilePath: 'gitlab_branch.groovy') {
         createIndex(tableName: "gitlab_branch", indexName: "idx_gitlab_branch_name") {
             column(name: "name")
         }
-        createIndex(tableName: "gitlab_branch", indexName: "idx_gitlab_branch_issue_id") {
-            column(name: "issue_id")
-        }
         createIndex(tableName: "gitlab_branch", indexName: "idx_gitlab_branch_project_id") {
             column(name: "project_id")
         }

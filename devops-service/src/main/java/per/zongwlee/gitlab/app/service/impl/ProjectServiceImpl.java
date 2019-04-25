@@ -79,17 +79,16 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void deleteProject(Integer projectId) {
+    public void deleteProject(Long projectId) {
+        Repository repository = repositoryMapper.selectByPrimaryKey(projectId);
         try {
             gitlab4jclient
                     .getGitLabApi(1)
-                    .getProjectApi().deleteProject(projectId);
+                    .getProjectApi().deleteProject(repository.getGitlabProjectId());
         } catch (GitLabApiException e) {
             throw new CommonException(e.getMessage(), e);
         }
-        Repository repository = new Repository();
-        repository.setGitlabProjectId(projectId);
-        repositoryMapper.delete(repository);
+        repositoryMapper.deleteByPrimaryKey(projectId);
     }
 
     @Override
@@ -128,16 +127,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Project getProject(Integer userId, String groupCode, String projectCode) {
-        try {
-            return gitlab4jclient.getGitLabApi(userId).getProjectApi().getProject(groupCode, projectCode);
-        } catch (GitLabApiException e) {
-            if ("404 Project Not Found".equals(e.getMessage())) {
-                return new Project();
-            } else {
-                throw new CommonException(e.getMessage(), e);
-            }
-        }
+    public List<Repository> getProject() {
+        return repositoryMapper.selectAll();
     }
 
     @Override

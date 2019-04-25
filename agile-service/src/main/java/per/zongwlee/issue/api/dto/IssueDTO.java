@@ -20,6 +20,7 @@ public class IssueDTO {
     private Long statusId;
     private Date handleDate;
     private Date solveDate;
+    private Long branchId;
 
     private RoleDTO reporter;
     private RoleDTO handler;
@@ -120,5 +121,13 @@ public class IssueDTO {
 
     public void setSolveDate(Date solveDate) {
         this.solveDate = solveDate;
+    }
+
+    public Long getBranchId() {
+        return branchId;
+    }
+
+    public void setBranchId(Long branchId) {
+        this.branchId = branchId;
     }
 }

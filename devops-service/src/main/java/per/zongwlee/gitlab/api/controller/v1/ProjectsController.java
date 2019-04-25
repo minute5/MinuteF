@@ -52,7 +52,7 @@ public class ProjectsController {
     @DeleteMapping(value = "/{project_id}")
     public ResponseEntity delete(
             @ApiParam(value = "项目ID", required = true)
-            @PathVariable(value = "project_id") Integer projectId) {
+            @PathVariable(value = "project_id") Long projectId) {
         projectService.deleteProject(projectId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
@@ -109,7 +109,20 @@ public class ProjectsController {
             @PathVariable(value = "project_id") Long projectId) {
         return Optional.ofNullable(projectService.getProjectById(projectId))
                 .map(target -> new ResponseEntity<>(target, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.project.get"));
+                .orElseThrow(() -> new CommonException("error.project.get.id"));
+    }
+
+    /**
+     * 通过项目id查询项目
+     *
+     * @return Repository
+     */
+    @ApiOperation(value = "查询所有项目")
+    @GetMapping(value = "/list/all")
+    public ResponseEntity<List<Repository>> queryProject() {
+        return Optional.ofNullable(projectService.getProject())
+                .map(target -> new ResponseEntity<>(target, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.project.get.all"));
     }
 
 //    /**

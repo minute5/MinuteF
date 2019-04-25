@@ -24,7 +24,6 @@ public class Branch extends AuditDomain {
     private String name;
     private String sourceName;
     private Integer creatorId;
-    private Long issueId;
     private int active;
     private Integer projectId;
 
@@ -78,14 +77,6 @@ public class Branch extends AuditDomain {
 
     public void setCreatorId(Integer creatorId) {
         this.creatorId = creatorId;
-    }
-
-    public Long getIssueId() {
-        return issueId;
-    }
-
-    public void setIssueId(Long issueId) {
-        this.issueId = issueId;
     }
 
     public int getActive() {

@@ -27,7 +27,7 @@ public interface ProjectService {
      *
      * @param projectId 项目 id
      */
-    void deleteProject(Integer projectId);
+    void deleteProject(Long projectId);
 
 
     /**
@@ -57,14 +57,11 @@ public interface ProjectService {
     Repository getProjectById(Long projectId);
 
     /**
-     * 通过组名项目名查询项目
+     * 查询所有项目
      *
-     * @param userId      项目Id
-     * @param groupCode   组名
-     * @param projectCode 项目名
-     * @return Project
+     * @return Repository
      */
-    Project getProject(Integer userId, String groupCode, String projectCode);
+    List<Repository> getProject();
 
     /**
      * 添加项目成员

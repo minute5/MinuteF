@@ -30,6 +30,7 @@ public class Issue extends AuditDomain {
     private Long statusId;
     private Date handleDate;
     private Date solveDate;
+    private Long branchId;
 
     private Long objectVersionNumber;
 
@@ -113,5 +114,13 @@ public class Issue extends AuditDomain {
 
     public void setSolveDate(Date solveDate) {
         this.solveDate = solveDate;
+    }
+
+    public Long getBranchId() {
+        return branchId;
+    }
+
+    public void setBranchId(Long branchId) {
+        this.branchId = branchId;
     }
 }
