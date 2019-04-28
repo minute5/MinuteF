@@ -144,7 +144,7 @@ public class RepositoryServiceImpl implements RepositoryService {
         } catch (GitLabApiException e) {
             throw new CommonException("error.branch.delete");
         }
-        
+
         if (branchMapper.delete(branch) != 1) {
             throw new CommonException("error.branch.delete");
         }
@@ -163,8 +163,8 @@ public class RepositoryServiceImpl implements RepositoryService {
         Branch branch = new Branch();
         branch.setName(branchName);
         branch.setProjectId(repository.getGitlabProjectId());
-        Branch res =  branchMapper.selectOne(branch);
-        res.setIssueDTO(agileFeignClient.queryByBranchId(res.getId()).getBody());
+        Branch res = branchMapper.selectOne(branch);
+//        res.setIssueDTO(agileFeignClient.queryByBranchId(res.getId()).getBody());
         return res;
     }
 
@@ -178,7 +178,7 @@ public class RepositoryServiceImpl implements RepositoryService {
 //            return new Branch();
 //        }
         Branch res = branchMapper.selectByPrimaryKey(branchId);
-        res.setIssueDTO(agileFeignClient.queryByBranchId(res.getId()).getBody());
+//        res.setIssueDTO(agileFeignClient.queryByBranchId(res.getId()).getBody());
         return res;
     }
 
@@ -194,10 +194,10 @@ public class RepositoryServiceImpl implements RepositoryService {
         Repository repository = repositoryMapper.selectByPrimaryKey(projectId);
         Branch branch = new Branch();
         branch.setProjectId(repository.getGitlabProjectId());
-        List<Branch> res =  branchMapper.select(branch);
-        res.forEach(v->{
-            v.setIssueDTO(agileFeignClient.queryByBranchId(v.getId()).getBody());
-        });
+        List<Branch> res = branchMapper.select(branch);
+//        res.forEach(v -> {
+//            v.setIssueDTO(agileFeignClient.queryByBranchId(v.getId()).getBody());
+//        });
         return res;
     }
 

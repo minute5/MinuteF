@@ -7,7 +7,7 @@ spring:
   cloud:
     inetutils:
       #忽略回环网卡
-      ignored-interfaces[0]: eth0
+#      ignored-interfaces[0]: eth0
       #选择的网段
       preferredNetworks[0]: 106.14
 eureka:
