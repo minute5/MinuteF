@@ -7,14 +7,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import per.zongwlee.devops.Branch;
+import per.zongwlee.issue.infra.feign.fallback.BranchFeignClientFallback;
 import per.zongwlee.issue.infra.feign.fallback.UserFeignClientFallback;
 
 /**
  * @author zongw.lee@gmail.com
  * @since 2019/04/05
  */
-@FeignClient(value = "devops-gitlab-service",
-        fallback = UserFeignClientFallback.class)
+@FeignClient(value = "devops-gitlab-service",path = "/devops",
+        fallback = BranchFeignClientFallback.class)
 @Component
 public interface BranchFeignClient {
 

@@ -8,6 +8,7 @@ import per.zongwlee.agile.dto.IssueDTO;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * @author zongw.lee@gmail.com
@@ -28,6 +29,7 @@ public class Branch extends AuditDomain {
     private Integer active;
     private Integer projectId;
 
+    @Transient
     private IssueDTO issueDTO;
 
     private Long objectVersionNumber;
