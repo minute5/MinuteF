@@ -94,7 +94,7 @@ public class IssueServiceImpl extends BaseServiceImpl<Issue> implements IssueSer
         Optional.ofNullable(res.getHandlerId()).ifPresent(v -> res.setHandler(userFeignClient.queryById(v).getBody()));
         res.setReporter(userFeignClient.queryById(res.getReporterId()).getBody());
         res.setPriority(modelMapper.convert(priorityService.selectByPrimaryKey(res.getPriorityId()), PriorityDTO.class));
-        res.setBranch(branchFeignClient.queryBranchById(0L, res.getBranchId()).getBody());
+        Optional.ofNullable(res.getBranchId()).ifPresent(v -> res.setBranch(branchFeignClient.queryBranchById(0L, v).getBody()));
         return res;
     }
 

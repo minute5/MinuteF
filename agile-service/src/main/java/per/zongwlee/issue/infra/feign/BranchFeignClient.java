@@ -28,7 +28,7 @@ public interface BranchFeignClient {
      */
     @ApiOperation(value = "根据分支id查询分支")
     @GetMapping(value = "/v1/{project_id}/branch/{branch_id}")
-    public ResponseEntity<Branch> queryBranchById(
-            @PathVariable(value = "project_id") Long projectId,
+    ResponseEntity<Branch> queryBranchById(
+            @PathVariable("project_id") Long projectId,
             @PathVariable("branch_id") Long branchId);
 }
