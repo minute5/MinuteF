@@ -97,7 +97,7 @@ public class BranchController {
      * @return Branch
      */
     @ApiOperation(value = "根据分支id查询分支")
-    @GetMapping(value = "/{branch_id}")
+    @GetMapping(value = "/id/{branch_id}")
     public ResponseEntity<Branch> queryBranchById(
             @ApiParam(value = "工程id", required = true)
             @PathVariable(value = "project_id") Long projectId,
