@@ -14,7 +14,7 @@ import per.zongwlee.issue.infra.feign.fallback.UserFeignClientFallback;
  * @author zongw.lee@gmail.com
  * @since 2019/04/05
  */
-@FeignClient(value = "devops-gitlab-service",path = "/devops",
+@FeignClient(value = "devops-gitlab-service",
         fallback = BranchFeignClientFallback.class)
 @Component
 public interface BranchFeignClient {
