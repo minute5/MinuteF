@@ -19,10 +19,10 @@ import per.zongwlee.agile.dto.IssueDTO;
 @Component
 public interface AgileFeignClient {
 
-    @GetMapping("/v1/issue/{branch_id}")
+    @GetMapping("/v1/issue/branch/{branch_id}")
     ResponseEntity<IssueDTO> queryByBranchId(@ApiParam(value = "branch_id", required = true)
                                                     @PathVariable("branch_id") Long branchId);
 
-    @DeleteMapping(value = "/v1/issue/{branch_id}")
+    @DeleteMapping(value = "/v1/issue/branch/{branch_id}")
     ResponseEntity<Boolean> deleteByBranchId(@PathVariable("branch_id") Long branchId);
 }

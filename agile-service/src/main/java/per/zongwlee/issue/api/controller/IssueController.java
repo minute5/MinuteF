@@ -47,7 +47,7 @@ public class IssueController extends BaseController {
     }
 
     @ApiOperation(value = "根据BranchId删除问题")
-    @DeleteMapping(value = "/{branch_id}")
+    @DeleteMapping(value = "/branch/{branch_id}")
     public ResponseEntity<Boolean> deleteByBranchId(@PathVariable("branch_id") Long branchId) {
         Issue issue = new Issue();
         issue.setBranchId(branchId);
@@ -115,7 +115,7 @@ public class IssueController extends BaseController {
     }
 
     @ApiOperation(value = "根据branch_id查询问题")
-    @GetMapping("/{branch_id}")
+    @GetMapping("/branch/{branch_id}")
     public ResponseEntity<IssueDTO> queryByBranchId(@ApiParam(value = "branch_id", required = true)
                                               @PathVariable("branch_id") Long branchId) {
         return Optional.ofNullable(issueService.queryByBranchId(branchId))
