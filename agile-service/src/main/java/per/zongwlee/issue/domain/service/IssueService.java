@@ -6,6 +6,8 @@ import io.choerodon.mybatis.service.BaseService;
 import per.zongwlee.issue.api.dto.IssueDTO;
 import per.zongwlee.issue.domain.entity.Issue;
 
+import java.util.List;
+
 /**
  * @author zongw.lee@gmail.com
  * @since 2019/04/12
@@ -21,7 +23,11 @@ public interface IssueService extends BaseService<Issue> {
 
     Page<IssueDTO> pageQueryFinishedMatters(PageRequest pageRequest, Long type);
 
+    List<IssueDTO> queryMatters();
+
     IssueDTO queryById(Long id);
+
+    IssueDTO queryByBranchId(Long branchId);
 
     IssueDTO create(IssueDTO issueDTO);
 

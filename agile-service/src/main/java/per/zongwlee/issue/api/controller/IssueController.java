@@ -12,9 +12,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import per.zongwlee.issue.api.dto.IssueDTO;
+import per.zongwlee.issue.domain.entity.Issue;
 import per.zongwlee.issue.domain.service.IssueService;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -42,6 +44,14 @@ public class IssueController extends BaseController {
     @DeleteMapping(value = "/{issue_id}")
     public ResponseEntity<Boolean> delete(@PathVariable("issue_id") Long issueId) {
         return new ResponseEntity<>(issueService.deleteByPrimaryKey(issueId) == 1, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "根据BranchId删除问题")
+    @DeleteMapping(value = "/{branch_id}")
+    public ResponseEntity<Boolean> deleteByBranchId(@PathVariable("branch_id") Long branchId) {
+        Issue issue = new Issue();
+        issue.setBranchId(branchId);
+        return new ResponseEntity<>(issueService.delete(issue) == 1, HttpStatus.OK);
     }
 
     @ApiOperation(value = "更新问题")
@@ -86,6 +96,14 @@ public class IssueController extends BaseController {
                 .orElseThrow(() -> new CommonException("error.issue.finished.get"));
     }
 
+    @ApiOperation(value = "不分页查询问题")
+    @GetMapping("/list")
+    public ResponseEntity<List<IssueDTO>> queryAllMatters() {
+        return Optional.ofNullable(issueService.queryMatters())
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.issue.finished.get"));
+    }
+
     @ApiOperation(value = "根据id查询问题")
     @GetMapping("/{issue_id}")
     public ResponseEntity<IssueDTO> queryById(@ApiParam(value = "issue_id", required = true)
@@ -94,5 +112,14 @@ public class IssueController extends BaseController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.id.get"));
 
+    }
+
+    @ApiOperation(value = "根据branch_id查询问题")
+    @GetMapping("/{branch_id}")
+    public ResponseEntity<IssueDTO> queryByBranchId(@ApiParam(value = "branch_id", required = true)
+                                              @PathVariable("branch_id") Long branchId) {
+        return Optional.ofNullable(issueService.queryByBranchId(branchId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException("error.issue.id.get"));
     }
 }

@@ -39,7 +39,7 @@ public class MergeRequestController {
     @PostMapping
     public ResponseEntity<MergeRequest> create(
             @ApiParam(value = "工程id", required = true)
-            @PathVariable(value = "project_id") Integer projectId,
+            @PathVariable(value = "project_id") Long projectId,
             @ApiParam(value = "要创建的分支名", required = true)
             @RequestParam("source_branch") String sourceBranch,
             @ApiParam(value = "源分支名", required = true)
@@ -69,7 +69,7 @@ public class MergeRequestController {
     @GetMapping(value = "/{merge_request_id}")
     public ResponseEntity<MergeRequest> query(
             @ApiParam(value = "项目id", required = true)
-            @PathVariable(value = "project_id") Integer projectId,
+            @PathVariable(value = "project_id") Long projectId,
             @ApiParam(value = "合并请求id", required = true)
             @PathVariable("merge_request_id") Integer mergeRequestId,
             @ApiParam(value = "用户Id")
@@ -89,7 +89,7 @@ public class MergeRequestController {
     @GetMapping
     public ResponseEntity<List<MergeRequest>> list(
             @ApiParam(value = "工程id", required = true)
-            @PathVariable(value = "project_id") Integer projectId) {
+            @PathVariable(value = "project_id") Long projectId) {
         return Optional.ofNullable(mergeRequestService.listMergeRequests(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(ERROR_MERGE_REQUEST_CREATE));
@@ -109,7 +109,7 @@ public class MergeRequestController {
     @PutMapping(value = "/{merge_request_id}/merge")
     public ResponseEntity<MergeRequest> acceptMergeRequest(
             @ApiParam(value = "项目id", required = true)
-            @PathVariable(value = "project_id") Integer projectId,
+            @PathVariable(value = "project_id") Long projectId,
             @ApiParam(value = "merge请求的id", required = true)
             @PathVariable(value = "merge_request_id") Integer mergeRequestId,
             @ApiParam(value = "merge的commit信息", required = true)
@@ -136,7 +136,7 @@ public class MergeRequestController {
     @GetMapping(value = "/{merge_request_id}/commit")
     public ResponseEntity<List<Commit>> listCommits(
             @ApiParam(value = "项目ID", required = true)
-            @PathVariable(value = "project_id") Integer projectId,
+            @PathVariable(value = "project_id") Long projectId,
             @ApiParam(value = "合并请求ID", required = true)
             @PathVariable("merge_request_id") Integer mergeRequestId,
             @ApiParam(value = "用户Id")
@@ -155,7 +155,7 @@ public class MergeRequestController {
      */
     @ApiOperation(value = "删除合并请求")
     @DeleteMapping(value = "/{merge_request_id}")
-    public ResponseEntity delete(@PathVariable(value = "project_id") Integer projectId,
+    public ResponseEntity delete(@PathVariable(value = "project_id") Long projectId,
                                  @PathVariable(value = "merge_request_id") Integer mergeRequestId) {
         mergeRequestService.deleteMergeRequest(projectId, mergeRequestId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

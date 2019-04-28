@@ -19,7 +19,7 @@ public interface MergeRequestService {
      * @param userId     用户Id Optional
      * @return MergeRequest
      */
-    MergeRequest createMergeRequest(Integer projectId, String sourceBranch,
+    MergeRequest createMergeRequest(Long projectId, String sourceBranch,
                                     String targetBranch, String title,
                                     String description, Integer userId);
 
@@ -32,7 +32,7 @@ public interface MergeRequestService {
      * @param userId       用户Id Optional
      * @return MergeRequest
      */
-    MergeRequest queryMergeRequest(Integer projectId, Integer mergeRequestId, Integer userId);
+    MergeRequest queryMergeRequest(Long projectId, Integer mergeRequestId, Integer userId);
 
     /**
      * 获取合并请求列表merge request
@@ -40,7 +40,7 @@ public interface MergeRequestService {
      * @param projectId 项目id
      * @return MergeRequest
      */
-    List<MergeRequest> listMergeRequests(Integer projectId);
+    List<MergeRequest> listMergeRequests(Long projectId);
 
 
     /**
@@ -55,7 +55,7 @@ public interface MergeRequestService {
      * @return MergeRequest
      */
     MergeRequest acceptMergeRequest(
-            Integer projectId, Integer mergeRequestId, String mergeCommitMessage,
+            Long projectId, Integer mergeRequestId, String mergeCommitMessage,
             Boolean shouldRemoveSourceBranch, Boolean mergeWhenPipelineSucceeds,
             Integer userId);
 
@@ -67,7 +67,7 @@ public interface MergeRequestService {
      * @param userId 用户Id
      * @return List
      */
-    List<Commit> listCommits(Integer projectId, Integer mergeRequestId, Integer userId);
+    List<Commit> listCommits(Long projectId, Integer mergeRequestId, Integer userId);
 
     /**
      * 删除合并请求
@@ -75,7 +75,7 @@ public interface MergeRequestService {
      * @param projectId      项目id
      * @param mergeRequestId 合并请求ID
      */
-    void deleteMergeRequest(Integer projectId, Integer mergeRequestId);
+    void deleteMergeRequest(Long projectId, Integer mergeRequestId);
 
 }
 

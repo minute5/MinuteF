@@ -18,7 +18,7 @@ public interface RepositoryService {
      * @param userId     用户Id
      * @return Branch
      */
-    Branch createBranch(Integer projectId, String branchName, String source, Integer userId, Long issueId);
+    Branch createBranch(Long projectId, String branchName, String source, Integer userId, Long issueId);
 
     /**
      * 获取tag列表
@@ -27,17 +27,17 @@ public interface RepositoryService {
      * @param userId    用户Id
      * @return List
      */
-    List<Tag> listTags(Integer projectId, Integer userId);
+    List<Tag> listTags(Long projectId, Integer userId);
 
     /**
      * 分页获取tag列表
      *
-     * @param projectId 项目id
+     * @param projectId   项目id
      * @param pageRequest 分页参数
-     * @param userId    用户Id
+     * @param userId      用户Id
      * @return List
      */
-    List<Tag> listTagsByPage(Integer projectId, PageRequest pageRequest, Integer userId);
+    List<Tag> listTagsByPage(Long projectId, PageRequest pageRequest, Integer userId);
 
     /**
      * 创建tag
@@ -50,7 +50,7 @@ public interface RepositoryService {
      * @param releaseNotes 发布日志
      * @return Tag
      */
-    Tag createTag(Integer projectId, String tagName, String ref, String msg, String releaseNotes, Integer userId);
+    Tag createTag(Long projectId, String tagName, String ref, String msg, String releaseNotes, Integer userId);
 
     /**
      * 根据标签名删除tag
@@ -59,7 +59,7 @@ public interface RepositoryService {
      * @param tagName   标签名
      * @param userId    用户Id
      */
-    void deleteTag(Integer projectId, String tagName, Integer userId);
+    void deleteTag(Long projectId, String tagName, Integer userId);
 
     /**
      * 更新 tag
@@ -69,7 +69,7 @@ public interface RepositoryService {
      * @param releaseNotes 发布日志
      * @return Tag
      */
-    Tag updateTagRelease(Integer projectId, String name, String releaseNotes, Integer userId);
+    Tag updateTagRelease(Long projectId, String name, String releaseNotes, Integer userId);
 
     /**
      * 根据分支名删除分支
@@ -78,7 +78,7 @@ public interface RepositoryService {
      * @param branchName 分支名
      * @param userId     用户Id
      */
-    void deleteBranch(Integer projectId, String branchName, Integer userId);
+    void deleteBranch(Long projectId, String branchName, Integer userId);
 
     /**
      * 根据分支名查询分支
@@ -87,8 +87,16 @@ public interface RepositoryService {
      * @param branchName 分支名
      * @return Branch
      */
-    Branch queryBranchByName(Integer projectId, String branchName);
+    Branch queryBranchByName(Long projectId, String branchName);
 
+
+    /**
+     * 根据分支id查询分支
+     *
+     * @param branchId 分支id
+     * @return Branch
+     */
+    Branch queryBranchById(Long branchId);
 
     /**
      * 获取项目下所有分支
@@ -97,7 +105,7 @@ public interface RepositoryService {
      * @param userId    用户Id
      * @return List
      */
-    List<Branch> listBranches(Integer projectId, Integer userId);
+    List<Branch> listBranches(Long projectId, Integer userId);
 
 
 }

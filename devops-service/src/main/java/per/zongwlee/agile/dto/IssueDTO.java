@@ -1,7 +1,6 @@
-package per.zongwlee.issue.api.dto;
+package per.zongwlee.agile.dto;
 
-import per.zongwlee.devops.Branch;
-import per.zongwlee.oauth.api.dto.RoleDTO;
+import per.zongwlee.oauth.dto.RoleDTO;
 
 import java.util.Date;
 
@@ -25,17 +24,8 @@ public class IssueDTO {
 
     private RoleDTO reporter;
     private RoleDTO handler;
-    private Branch branch;
 
     private PriorityDTO priority;
-
-    public Branch getBranch() {
-        return branch;
-    }
-
-    public void setBranch(Branch branch) {
-        this.branch = branch;
-    }
 
     public RoleDTO getReporter() {
         return reporter;

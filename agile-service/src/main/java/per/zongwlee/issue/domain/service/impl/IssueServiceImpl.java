@@ -14,11 +14,14 @@ import per.zongwlee.issue.domain.entity.Issue;
 import per.zongwlee.issue.domain.service.IssueService;
 import per.zongwlee.issue.domain.service.PriorityService;
 import per.zongwlee.issue.infra.enums.StatusEnums;
+import per.zongwlee.issue.infra.feign.BranchFeignClient;
 import per.zongwlee.issue.infra.feign.UserFeignClient;
 import per.zongwlee.issue.infra.mapper.IssueMapper;
 import per.zongwlee.issue.infra.utils.AgileModelMapper;
 import per.zongwlee.issue.infra.utils.ConvertUtil;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -40,6 +43,9 @@ public class IssueServiceImpl extends BaseServiceImpl<Issue> implements IssueSer
 
     @Autowired
     PriorityService priorityService;
+
+    @Autowired
+    BranchFeignClient branchFeignClient;
 
     @Override
     public Page<IssueDTO> pageQuery(PageRequest pageRequest, Long type) {
@@ -74,8 +80,29 @@ public class IssueServiceImpl extends BaseServiceImpl<Issue> implements IssueSer
     }
 
     @Override
+    public List<IssueDTO> queryMatters() {
+        List<IssueDTO> res = new ArrayList<>();
+        issueMapper.selectAll().forEach(v -> {
+            res.add(modelMapper.convert(v, IssueDTO.class));
+        });
+        return res;
+    }
+
+    @Override
     public IssueDTO queryById(Long id) {
         IssueDTO res = modelMapper.convert(issueMapper.selectByPrimaryKey(id), IssueDTO.class);
+        Optional.ofNullable(res.getHandlerId()).ifPresent(v -> res.setHandler(userFeignClient.queryById(v).getBody()));
+        res.setReporter(userFeignClient.queryById(res.getReporterId()).getBody());
+        res.setPriority(modelMapper.convert(priorityService.selectByPrimaryKey(res.getPriorityId()), PriorityDTO.class));
+        res.setBranch(branchFeignClient.queryBranchById(0L, res.getBranchId()).getBody());
+        return res;
+    }
+
+    @Override
+    public IssueDTO queryByBranchId(Long branchId) {
+        Issue issue = new Issue();
+        issue.setBranchId(branchId);
+        IssueDTO res = modelMapper.convert(issueMapper.selectOne(issue), IssueDTO.class);
         Optional.ofNullable(res.getHandlerId()).ifPresent(v -> res.setHandler(userFeignClient.queryById(v).getBody()));
         res.setReporter(userFeignClient.queryById(res.getReporterId()).getBody());
         res.setPriority(modelMapper.convert(priorityService.selectByPrimaryKey(res.getPriorityId()), PriorityDTO.class));

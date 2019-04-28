@@ -5,6 +5,7 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.gitlab4j.api.models.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +18,8 @@ import java.util.Optional;
 @RequestMapping(value = "/v1/{project_id}/tags")
 public class TagsController {
 
+    @Autowired
     private RepositoryService repositoryService;
-
-    public TagsController(RepositoryService repositoryService) {
-        this.repositoryService = repositoryService;
-    }
 
     /**
      * 创建tag
@@ -36,7 +34,7 @@ public class TagsController {
     @PostMapping
     public ResponseEntity<Tag> createTag(
             @ApiParam(value = "项目id", required = true)
-            @PathVariable(value = "project_id") Integer projectId,
+            @PathVariable(value = "project_id") Long projectId,
             @ApiParam(value = "标签名", required = true)
             @RequestParam("name") String name,
             @ApiParam(value = "标签源", required = true)
@@ -64,7 +62,7 @@ public class TagsController {
     @PutMapping
     public ResponseEntity<Tag> updateTagRelease(
             @ApiParam(value = "项目id", required = true)
-            @PathVariable(value = "project_id") Integer projectId,
+            @PathVariable(value = "project_id") Long projectId,
             @ApiParam(value = "标签名", required = true)
             @RequestParam("name") String name,
             @ApiParam(value = "发布日志")
@@ -87,7 +85,7 @@ public class TagsController {
     @DeleteMapping
     public ResponseEntity deleteTag(
             @ApiParam(value = "项目id", required = true)
-            @PathVariable(value = "project_id") Integer projectId,
+            @PathVariable(value = "project_id") Long projectId,
             @ApiParam(value = "标签名", required = true)
             @RequestParam("name") String name,
             @ApiParam(value = "用户Id")
@@ -108,7 +106,7 @@ public class TagsController {
     @GetMapping
     public ResponseEntity<List<Tag>> listTags(
             @ApiParam(value = "项目id", required = true)
-            @PathVariable(value = "project_id") Integer projectId,
+            @PathVariable(value = "project_id") Long projectId,
             @ApiParam(value = "用户Id")
             @RequestParam(value = "user_id", required = false) Integer userId) {
         return Optional.ofNullable(repositoryService.listTags(projectId, userId))
@@ -128,7 +126,7 @@ public class TagsController {
     @GetMapping(value = "/page")
     public ResponseEntity<List<Tag>> listTagsByPage(
             @ApiParam(value = "项目id", required = true)
-            @PathVariable(value = "project_id") Integer projectId,
+            @PathVariable(value = "project_id") Long projectId,
             @ApiParam(value = "分页参数") PageRequest pageRequest,
             @ApiParam(value = "用户Id")
             @RequestParam(value = "user_id", required = false) Integer userId) {

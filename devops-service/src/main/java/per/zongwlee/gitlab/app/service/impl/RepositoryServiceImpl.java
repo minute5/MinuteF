@@ -8,8 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import per.zongwlee.gitlab.app.service.RepositoryService;
 import per.zongwlee.gitlab.domain.entity.Branch;
+import per.zongwlee.gitlab.domain.entity.Repository;
 import per.zongwlee.gitlab.infra.common.client.Gitlab4jClient;
+import per.zongwlee.gitlab.infra.feign.AgileFeignClient;
 import per.zongwlee.gitlab.infra.mapper.BranchMapper;
+import per.zongwlee.gitlab.infra.mapper.RepositoryMapper;
 
 import java.util.List;
 
@@ -26,11 +29,18 @@ public class RepositoryServiceImpl implements RepositoryService {
     @Autowired
     BranchMapper branchMapper;
 
+    @Autowired
+    RepositoryMapper repositoryMapper;
+
+    @Autowired
+    AgileFeignClient agileFeignClient;
+
     @Override
-    public Branch createBranch(Integer projectId, String branchName, String source, Integer userId, Long issueId) {
+    public Branch createBranch(Long projectId, String branchName, String source, Integer userId, Long issueId) {
+        Repository repository = repositoryMapper.selectByPrimaryKey(projectId);
         try {
             this.gitlab4jclient.getGitLabApi(userId).getRepositoryApi()
-                    .createBranch(projectId, branchName, source);
+                    .createBranch(repository.getGitlabProjectId(), branchName, source);
         } catch (GitLabApiException e) {
             if (e.getMessage().equals("Branch already exists")) {
                 Branch branch2 = new Branch();
@@ -44,8 +54,7 @@ public class RepositoryServiceImpl implements RepositoryService {
         branch.setSourceName(source);
         branch.setCreatorId(userId);
         branch.setActive(0);
-        branch.setIssueId(issueId);
-        branch.setProjectId(projectId);
+        branch.setProjectId(repository.getGitlabProjectId());
         if (branchMapper.insert(branch) != 1) {
             throw new CommonException("error.branch.insert");
         }
@@ -53,77 +62,85 @@ public class RepositoryServiceImpl implements RepositoryService {
     }
 
     @Override
-    public List<Tag> listTags(Integer projectId, Integer userId) {
+    public List<Tag> listTags(Long projectId, Integer userId) {
+        Repository repository = repositoryMapper.selectByPrimaryKey(projectId);
         try {
-            return gitlab4jclient.getGitLabApi(userId).getRepositoryApi().getTags(projectId);
+            return gitlab4jclient.getGitLabApi(userId).getRepositoryApi().getTags(repository.getGitlabProjectId());
         } catch (GitLabApiException e) {
             throw new CommonException("error.tag.get");
         }
     }
 
     @Override
-    public List<Tag> listTagsByPage(Integer projectId, PageRequest pageRequest, Integer userId) {
+    public List<Tag> listTagsByPage(Long projectId, PageRequest pageRequest, Integer userId) {
+        Repository repository = repositoryMapper.selectByPrimaryKey(projectId);
         try {
             return gitlab4jclient.getGitLabApi(userId)
                     .getRepositoryApi()
-                    .getTags(projectId, pageRequest.getPage(), pageRequest.getSize());
+                    .getTags(repository.getGitlabProjectId(), pageRequest.getPage(), pageRequest.getSize());
         } catch (GitLabApiException e) {
             throw new CommonException("error.tag.getPage");
         }
     }
 
     @Override
-    public Tag createTag(Integer projectId, String tagName, String ref, String msg, String releaseNotes, Integer userId) {
+    public Tag createTag(Long projectId, String tagName, String ref, String msg, String releaseNotes, Integer userId) {
+        Repository repository = repositoryMapper.selectByPrimaryKey(projectId);
         try {
             return gitlab4jclient.getGitLabApi(userId)
                     .getRepositoryApi()
-                    .createTag(projectId, tagName, ref, msg, releaseNotes);
+                    .createTag(repository.getGitlabProjectId(), tagName, ref, msg, releaseNotes);
         } catch (GitLabApiException e) {
             throw new CommonException("error.tag.create: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public void deleteTag(Integer projectId, String tagName, Integer userId) {
+    public void deleteTag(Long projectId, String tagName, Integer userId) {
+        Repository repository = repositoryMapper.selectByPrimaryKey(projectId);
         try {
             gitlab4jclient
                     .getGitLabApi(userId)
                     .getRepositoryApi()
-                    .deleteTag(projectId, tagName);
+                    .deleteTag(repository.getGitlabProjectId(), tagName);
         } catch (GitLabApiException e) {
             throw new CommonException("error.tag.delete: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public Tag updateTagRelease(Integer projectId, String name, String releaseNotes, Integer userId) {
+    public Tag updateTagRelease(Long projectId, String name, String releaseNotes, Integer userId) {
+        Repository repository = repositoryMapper.selectByPrimaryKey(projectId);
         try {
             return gitlab4jclient.getGitLabApi(userId)
                     .getRepositoryApi()
-                    .updateTagRelease(projectId, name, releaseNotes);
+                    .updateTagRelease(repository.getGitlabProjectId(), name, releaseNotes);
         } catch (GitLabApiException e) {
             throw new CommonException("error.tag.update: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public void deleteBranch(Integer projectId, String branchName, Integer userId) {
+    public void deleteBranch(Long projectId, String branchName, Integer userId) {
+        Repository repository = repositoryMapper.selectByPrimaryKey(projectId);
+
         Branch branch = new Branch();
         branch.setName(branchName);
-        branch.setProjectId(projectId);
+        branch.setProjectId(repository.getGitlabProjectId());
 
         Branch subBranch = new Branch();
         subBranch.setSourceName(branchName);
-        subBranch.setProjectId(projectId);
+        subBranch.setProjectId(repository.getGitlabProjectId());
 
         if (!branchMapper.select(subBranch).isEmpty()) {
             throw new CommonException("error.branch.has.sub.branch");
         }
+        agileFeignClient.deleteByBranchId(branchMapper.selectOne(branch).getId());
         try {
             gitlab4jclient
                     .getGitLabApi(userId)
                     .getRepositoryApi()
-                    .deleteBranch(projectId, branchName);
+                    .deleteBranch(repository.getGitlabProjectId(), branchName);
         } catch (GitLabApiException e) {
             throw new CommonException("error.branch.delete");
         }
@@ -134,7 +151,7 @@ public class RepositoryServiceImpl implements RepositoryService {
     }
 
     @Override
-    public Branch queryBranchByName(Integer projectId, String branchName) {
+    public Branch queryBranchByName(Long projectId, String branchName) {
         //        try {
 //            return gitlab4jclient.getGitLabApi()
 //                    .getRepositoryApi()
@@ -142,14 +159,31 @@ public class RepositoryServiceImpl implements RepositoryService {
 //        } catch (GitLabApiException e) {
 //            return new Branch();
 //        }
+        Repository repository = repositoryMapper.selectByPrimaryKey(projectId);
         Branch branch = new Branch();
         branch.setName(branchName);
-        branch.setProjectId(projectId);
-        return branchMapper.selectOne(branch);
+        branch.setProjectId(repository.getGitlabProjectId());
+        Branch res =  branchMapper.selectOne(branch);
+        res.setIssueDTO(agileFeignClient.queryByBranchId(res.getId()).getBody());
+        return res;
     }
 
     @Override
-    public List<Branch> listBranches(Integer projectId, Integer userId) {
+    public Branch queryBranchById(Long branchId) {
+        //        try {
+//            return gitlab4jclient.getGitLabApi()
+//                    .getRepositoryApi()
+//                    .getBranch(projectId, branchName);
+//        } catch (GitLabApiException e) {
+//            return new Branch();
+//        }
+        Branch res = branchMapper.selectByPrimaryKey(branchId);
+        res.setIssueDTO(agileFeignClient.queryByBranchId(res.getId()).getBody());
+        return res;
+    }
+
+    @Override
+    public List<Branch> listBranches(Long projectId, Integer userId) {
 //        try {
 //            return gitlab4jclient.getGitLabApi(userId)
 //                    .getRepositoryApi()
@@ -157,9 +191,14 @@ public class RepositoryServiceImpl implements RepositoryService {
 //        } catch (GitLabApiException e) {
 //            throw new CommonException("error.branch.get");
 //        }
+        Repository repository = repositoryMapper.selectByPrimaryKey(projectId);
         Branch branch = new Branch();
-        branch.setProjectId(projectId);
-        return branchMapper.select(branch);
+        branch.setProjectId(repository.getGitlabProjectId());
+        List<Branch> res =  branchMapper.select(branch);
+        res.forEach(v->{
+            v.setIssueDTO(agileFeignClient.queryByBranchId(v.getId()).getBody());
+        });
+        return res;
     }
 
 }

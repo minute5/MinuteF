@@ -35,7 +35,7 @@ public class BranchController {
     @PostMapping
     public ResponseEntity<Branch> createBranch(
             @ApiParam(value = "项目id", required = true)
-            @PathVariable(value = "project_id") Integer projectId,
+            @PathVariable(value = "project_id") Long projectId,
             @ApiParam(value = "分支名", required = true)
             @RequestParam("name") String name,
             @ApiParam(value = "源分支名", required = true)
@@ -43,7 +43,7 @@ public class BranchController {
             @ApiParam(value = "用户Id")
             @RequestParam(value = "user_id") Integer userId,
             @ApiParam(value = "关联issueId")
-            @RequestParam(value = "issue_id") Long issueId
+            @RequestParam(value = "issue_id",required = false) Long issueId
     ) {
         return Optional.ofNullable(repositoryService.createBranch(projectId, name, source, userId, issueId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -61,7 +61,7 @@ public class BranchController {
     @DeleteMapping(value = "/{branch_name}")
     public ResponseEntity deleteBranch(
             @ApiParam(value = "项目id", required = true)
-            @PathVariable(value = "project_id") Integer projectId,
+            @PathVariable(value = "project_id") Long projectId,
             @ApiParam(value = "要删除的分支名", required = true)
             @PathVariable("branch_name") String branchName,
             @ApiParam(value = "用户Id")
@@ -81,12 +81,31 @@ public class BranchController {
     @GetMapping(value = "/{branch_name}")
     public ResponseEntity<Branch> queryBranchByName(
             @ApiParam(value = "工程id", required = true)
-            @PathVariable(value = "project_id") Integer projectId,
+            @PathVariable(value = "project_id") Long projectId,
             @ApiParam(value = "要查询的分支名", required = true)
             @PathVariable("branch_name") String branchName) {
         return Optional.ofNullable(repositoryService.queryBranchByName(projectId, branchName))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.branch.query"));
+    }
+
+    /**
+     * 根据分支id查询分支
+     *
+     * @param projectId  项目id
+     * @param branchId 分支id
+     * @return Branch
+     */
+    @ApiOperation(value = "根据分支id查询分支")
+    @GetMapping(value = "/{branch_id}")
+    public ResponseEntity<Branch> queryBranchById(
+            @ApiParam(value = "工程id", required = true)
+            @PathVariable(value = "project_id") Long projectId,
+            @ApiParam(value = "要查询的分支id", required = true)
+            @PathVariable("branch_id") Long branchId) {
+        return Optional.ofNullable(repositoryService.queryBranchById(branchId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.branch.query.id"));
     }
 
     /**
@@ -100,7 +119,7 @@ public class BranchController {
     @GetMapping(value = "/all")
     public ResponseEntity<List<Branch>> listBranches(
             @ApiParam(value = "项目id", required = true)
-            @PathVariable(value = "project_id") Integer projectId,
+            @PathVariable(value = "project_id") Long projectId,
             @ApiParam(value = "用户Id")
             @RequestParam(value = "user_id", required = false) Integer userId) {
         return Optional.ofNullable(repositoryService.listBranches(projectId, userId))
