@@ -1,6 +1,7 @@
 package per.zongwlee.oauth.infra.feign.fallback;
 
 import io.choerodon.core.exception.FeignException;
+import org.gitlab4j.api.models.Member;
 import org.gitlab4j.api.models.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,11 @@ public class DevopsFeignClientFallback implements DevopsFeignClient {
     @Override
     public ResponseEntity<Integer> queryUserByUsername(String username) {
         throw new FeignException("error.gitlab.get.user.by.name");
+    }
+
+    @Override
+    public ResponseEntity<Member> createMember(Integer userId) {
+        throw new FeignException("error.gitlab.project.member.add");
     }
 }
 

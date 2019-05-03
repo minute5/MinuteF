@@ -94,6 +94,10 @@ public class RoleServiceImpl implements RoleService {
         if (roleMapper.insert(roleE) != 1) {
             throw new CommonException("error.user.insert");
         }
+
+        //加入项目
+        devopsFeignClient.createMember(gitlabId);
+
         return modelMapper.map(roleMapper.selectOne(roleE), ReturnRoleDTO.class);
     }
 

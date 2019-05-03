@@ -1,5 +1,7 @@
 package per.zongwlee.oauth.infra.feign;
 
+import io.swagger.annotations.ApiParam;
+import org.gitlab4j.api.models.Member;
 import org.gitlab4j.api.models.User;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -38,4 +40,7 @@ public interface DevopsFeignClient {
      */
     @GetMapping(value = "/v1/users/{username}/id")
     ResponseEntity<Integer> queryUserByUsername(@PathVariable(value = "username") String username);
+
+    @PostMapping(value = "/v1/projects/members")
+    ResponseEntity<Member> createMember(@RequestParam(value = "user_id") Integer userId);
 }
