@@ -18,6 +18,8 @@ public interface RoleService {
 
     ReturnRoleDTO updateSelective(RoleDTO roleDTO);
 
+    void updatePasswordById(Long id,String password);
+
     boolean checkEmail(String email);
 
     ReturnRoleDTO queryById(Long roleId);

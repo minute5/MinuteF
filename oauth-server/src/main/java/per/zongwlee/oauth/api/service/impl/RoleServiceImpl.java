@@ -110,6 +110,18 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    public void updatePasswordById(Long id, String password) {
+        RoleE roleE = new RoleE();
+        roleE.setId(id);
+        roleE.setObjectVersionNumber(roleMapper.selectByPrimaryKey(id).getObjectVersionNumber());
+        roleE.setPassword(bCryptPasswordEncoder.encode(password));
+
+        if (roleMapper.updateByPrimaryKeySelective(roleE) != 1) {
+            throw new CommonException("error.role.update");
+        }
+    }
+
+    @Override
     public boolean checkEmail(String email) {
         RoleE roleEEmail = new RoleE();
         if (!userValidator.emailValidator(email)) {

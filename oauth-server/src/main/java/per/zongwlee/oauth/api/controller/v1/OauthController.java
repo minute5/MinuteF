@@ -75,6 +75,13 @@ public class OauthController {
                 .orElseThrow(() -> new CommonException("error.user.update"));
     }
 
+    @PutMapping(value = "/update/password/{role_id}")
+    public ResponseEntity<Boolean> updatePasswordById(@PathVariable(value = "role_id") Long id,
+                                                      @RequestParam(value = "password") String password) {
+        roleService.updatePasswordById(id, password);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @GetMapping(value = "/check/email")
     public Boolean query(@RequestParam String email) {
         return roleService.checkEmail(email);
