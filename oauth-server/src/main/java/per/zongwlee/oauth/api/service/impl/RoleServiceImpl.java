@@ -103,7 +103,8 @@ public class RoleServiceImpl implements RoleService {
         if (roleMapper.updateByPrimaryKeySelective(roleE) != 1) {
             throw new CommonException("error.role.update");
         }
-        ReturnRoleDTO res = modelMapper.map(roleMapper.selectOne(roleE), ReturnRoleDTO.class);
+        ReturnRoleDTO res = modelMapper.map(roleMapper.selectByPrimaryKey(roleE.getId()), ReturnRoleDTO.class);
+
         res.loadRoleType();
         return res;
     }

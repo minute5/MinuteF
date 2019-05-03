@@ -58,7 +58,9 @@ public class RepositoryServiceImpl implements RepositoryService {
         if (branchMapper.insert(branch) != 1) {
             throw new CommonException("error.branch.insert");
         }
-        return branchMapper.selectOne(branch);
+        Branch resBranch = branchMapper.selectOne(branch);
+//        agileFeignClient.updateBranch(issueId, resBranch.getId());
+        return resBranch;
     }
 
     @Override

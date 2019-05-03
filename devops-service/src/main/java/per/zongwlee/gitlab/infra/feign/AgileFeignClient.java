@@ -7,13 +7,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import per.zongwlee.agile.dto.IssueDTO;
 
 /**
  * @author zongw.lee@gmail.com
  * @since 2019/04/05
  */
-@FeignClient(value = "agile-service", url = "http://106.14.187.2:8000",path = "/agile",
+@FeignClient(value = "agile-service",
         fallback = AgileFeignClient.class)
 @Component
 public interface AgileFeignClient {
@@ -21,6 +22,10 @@ public interface AgileFeignClient {
     @GetMapping("/v1/issue/branch/{branch_id}")
     ResponseEntity<IssueDTO> queryByBranchId(@ApiParam(value = "branch_id", required = true)
                                              @PathVariable("branch_id") Long branchId);
+
+    @PutMapping("/v1/issue/{issue_id}/{branch_id}")
+    ResponseEntity updateBranch(@PathVariable(value = "issue_id") Long issueId,
+                                @PathVariable(value = "branch_id") Long branchId);
 
     @DeleteMapping(value = "/v1/issue/branch/{branch_id}")
     ResponseEntity<Boolean> deleteByBranchId(@PathVariable("branch_id") Long branchId);

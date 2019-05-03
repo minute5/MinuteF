@@ -19,6 +19,11 @@ public class AgileFeignClientFallback implements AgileFeignClient {
     }
 
     @Override
+    public ResponseEntity updateBranch(Long issueId, Long branchId) {
+        throw new FeignException("error.update.issue.branch.id");
+    }
+
+    @Override
     public ResponseEntity<Boolean> deleteByBranchId(Long branchId) {
         throw new FeignException("error.delete.agile.branch.id");
     }

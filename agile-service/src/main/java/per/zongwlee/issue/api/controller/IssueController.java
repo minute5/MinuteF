@@ -60,11 +60,24 @@ public class IssueController extends BaseController {
         return new ResponseEntity<>(issueService.updateIssue(issueDTO), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "修改问题关联branch")
+    @PutMapping("/{issue_id}/{branch_id}")
+    public ResponseEntity updateBranch(@PathVariable(value = "issue_id") Long issueId,
+                                 @PathVariable(value = "branch_id") Long branchId) {
+        IssueDTO issueDTO = new IssueDTO();
+        issueDTO.setId(issueId);
+        issueDTO.setBranchId(branchId);
+        if (issueService.updateByPrimaryKeySelective(modelMapper.map(issueDTO, Issue.class)) != 1) {
+            throw new CommonException("error.update.issue.branch.by.id");
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @ApiOperation(value = "查询所有问题")
     @GetMapping("/list/all")
     public ResponseEntity<Page<IssueDTO>> queryAll(
             @ApiParam(value = "分页参数") PageRequest pageRequest) {
-        return Optional.ofNullable(issueService.pageQuery(pageRequest,TYPE))
+        return Optional.ofNullable(issueService.pageQuery(pageRequest, TYPE))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.issue.list.get"));
     }
@@ -73,7 +86,7 @@ public class IssueController extends BaseController {
     @GetMapping("/list/backlog")
     public ResponseEntity<Page<IssueDTO>> queryBacklogs(
             @ApiParam(value = "分页参数") PageRequest pageRequest) {
-        return Optional.ofNullable(issueService.pageQueryBacklog(pageRequest,TYPE))
+        return Optional.ofNullable(issueService.pageQueryBacklog(pageRequest, TYPE))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.issue.backlog.get"));
     }
@@ -82,7 +95,7 @@ public class IssueController extends BaseController {
     @GetMapping("/list/active")
     public ResponseEntity<Page<IssueDTO>> queryActiveMatters(
             @ApiParam(value = "分页参数") PageRequest pageRequest) {
-        return Optional.ofNullable(issueService.pageQueryActiveMatters(pageRequest,TYPE))
+        return Optional.ofNullable(issueService.pageQueryActiveMatters(pageRequest, TYPE))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.issue.active.get"));
     }
@@ -91,7 +104,7 @@ public class IssueController extends BaseController {
     @GetMapping("/list/finished")
     public ResponseEntity<Page<IssueDTO>> queryFinishedMatters(
             @ApiParam(value = "分页参数") PageRequest pageRequest) {
-        return Optional.ofNullable(issueService.pageQueryFinishedMatters(pageRequest,TYPE))
+        return Optional.ofNullable(issueService.pageQueryFinishedMatters(pageRequest, TYPE))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.issue.finished.get"));
     }
@@ -117,7 +130,7 @@ public class IssueController extends BaseController {
     @ApiOperation(value = "根据branch_id查询问题")
     @GetMapping("/branch/{branch_id}")
     public ResponseEntity<IssueDTO> queryByBranchId(@ApiParam(value = "branch_id", required = true)
-                                              @PathVariable("branch_id") Long branchId) {
+                                                    @PathVariable("branch_id") Long branchId) {
         return Optional.ofNullable(issueService.queryByBranchId(branchId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.id.get"));
