@@ -15,7 +15,8 @@ spring:
     inetutils:
       #忽略回环网卡
       #      ignored-interfaces[0]: lo#选择的网段
-      preferredNetworks[0]: 171
+#      preferredNetworks[0]: 171
+#      default-ip-address: 183.227.188.29
 gitlab:
   url: "http://127.0.0.1:10080"
   privateToken: "Dm3dPtVKPGhm28Z-yuy_"
@@ -24,6 +25,7 @@ eureka:
     preferIpAddress: true
     leaseRenewalIntervalInSeconds: 1
     leaseExpirationDurationInSeconds: 3
+#    ip-address: 183.227.188.29
   client:
     serviceUrl:
       defaultZone: http://106.14.187.2:8000/eureka/

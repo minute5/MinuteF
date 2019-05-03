@@ -29,18 +29,7 @@ public class Branch extends AuditDomain {
     private Integer active;
     private Integer projectId;
 
-    @Transient
-    private IssueDTO issueDTO;
-
     private Long objectVersionNumber;
-
-    public IssueDTO getIssueDTO() {
-        return issueDTO;
-    }
-
-    public void setIssueDTO(IssueDTO issueDTO) {
-        this.issueDTO = issueDTO;
-    }
 
     @Override
     public Long getObjectVersionNumber() {
