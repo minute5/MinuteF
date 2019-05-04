@@ -23,10 +23,6 @@ public interface AgileFeignClient {
     ResponseEntity<IssueDTO> queryByBranchId(@ApiParam(value = "branch_id", required = true)
                                              @PathVariable("branch_id") Long branchId);
 
-    @PutMapping("/v1/issue/{issue_id}/{branch_id}")
-    ResponseEntity updateBranch(@PathVariable(value = "issue_id") Long issueId,
-                                @PathVariable(value = "branch_id") Long branchId);
-
     @DeleteMapping(value = "/v1/issue/branch/{branch_id}")
     ResponseEntity<Boolean> deleteByBranchId(@PathVariable("branch_id") Long branchId);
 }
