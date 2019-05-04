@@ -86,6 +86,15 @@ public class TestCaseController extends BaseController {
                 .orElseThrow(() -> new CommonException("error.case.list.get"));
     }
 
+    @ApiOperation(value = "查询完成测试用例")
+    @GetMapping("/list/failed")
+    public ResponseEntity<Page<IssueDTO>> queryFailedMatters(
+            @ApiParam(value = "分页参数") PageRequest pageRequest) {
+        return Optional.ofNullable(issueService.queryFailedMatters(pageRequest, TYPE))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.case.list.get"));
+    }
+
     @ApiOperation(value = "根据id查询测试用例")
     @GetMapping("/{case_id}")
     public ResponseEntity<IssueDTO> queryById(@ApiParam(value = "id", required = true)

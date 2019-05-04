@@ -80,6 +80,14 @@ public class IssueServiceImpl extends BaseServiceImpl<Issue> implements IssueSer
     }
 
     @Override
+    public Page<IssueDTO> queryFailedMatters(PageRequest pageRequest, Long type) {
+        Issue issue = getQueryIssue(StatusEnums.failed, type);
+        Page<IssueDTO> page = ConvertUtil.convertPage(PageHelper.doPageAndSort(
+                pageRequest, () -> issueMapper.select(issue)), IssueDTO.class);
+        return loadIssueDTOPage(page);
+    }
+
+    @Override
     public List<IssueDTO> queryMatters() {
         List<IssueDTO> res = new ArrayList<>();
         issueMapper.selectAll().forEach(v -> {

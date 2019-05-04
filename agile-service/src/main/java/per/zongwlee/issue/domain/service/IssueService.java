@@ -23,6 +23,8 @@ public interface IssueService extends BaseService<Issue> {
 
     Page<IssueDTO> pageQueryFinishedMatters(PageRequest pageRequest, Long type);
 
+    Page<IssueDTO> queryFailedMatters(PageRequest pageRequest, Long type);
+
     List<IssueDTO> queryMatters();
 
     IssueDTO queryById(Long id);

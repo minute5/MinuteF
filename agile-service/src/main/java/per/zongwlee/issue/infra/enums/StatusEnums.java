@@ -8,11 +8,12 @@ public enum StatusEnums {
 
     backlog(1L),
     active(2L),
-    finished(3L);
+    finished(3L),
+    failed(4L);
 
     private Long status;
 
-    private StatusEnums(Long status){
+    private StatusEnums(Long status) {
         this.status = status;
     }
 
