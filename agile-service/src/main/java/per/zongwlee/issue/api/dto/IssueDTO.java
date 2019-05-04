@@ -23,6 +23,9 @@ public class IssueDTO {
     private Date solveDate;
     private Long branchId;
 
+    private Date creationDate;
+    private Date lastUpdateDate;
+
     private RoleDTO reporter;
     private RoleDTO handler;
     private Branch branch;
@@ -43,6 +46,22 @@ public class IssueDTO {
 
     public void setReporter(RoleDTO reporter) {
         this.reporter = reporter;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getLastUpdateDate() {
+        return lastUpdateDate;
+    }
+
+    public void setLastUpdateDate(Date lastUpdateDate) {
+        this.lastUpdateDate = lastUpdateDate;
     }
 
     public RoleDTO getHandler() {
